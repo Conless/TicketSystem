@@ -1,3 +1,0 @@
-[submodule "third_party/bustub"]
-	path = third_party/bustub
-	url = https://github.com/cmu-db/bustub.git
