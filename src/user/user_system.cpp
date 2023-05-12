@@ -4,8 +4,8 @@ namespace conless {
 
 UserSystem::UserSystem(const std::string &file_name, bool inherit_file) : user_info_db_(file_name + "_user_info") {}
 
-auto UserSystem::Init(const UserName &username, const UserPassword &passwd, const UserNickname &nickname,
-                      const UserEmail &mail_addr) -> bool {
+void UserSystem::Init(const UserName &username, const UserPassword &passwd, const UserNickname &nickname,
+                      const UserEmail &mail_addr) {
   UserInfo new_user_info{username, nickname, passwd, mail_addr, 10};
   user_info_db_.Insert(username, new_user_info);
   return true;

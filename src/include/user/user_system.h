@@ -14,8 +14,8 @@ class UserSystem {
   ~UserSystem() = default;
 
  public:
-  auto Init(const UserName &username, const UserPassword &passwd, const UserNickname &nickname,
-            const UserEmail &mail_addr) -> bool;
+  void Init(const UserName &username, const UserPassword &passwd, const UserNickname &nickname,
+            const UserEmail &mail_addr);
   auto AddUser(const UserName &cur_username, const UserName &username, const UserPassword &passwd,
                const UserNickname &nickname, const UserEmail &mail_addr, int priv) -> bool;
 
@@ -29,7 +29,7 @@ class UserSystem {
                      const UserNickname &nickname, const UserEmail &mail_addr, int priv) -> std::string;
 
   auto BuyNewTicket(const UserName &username) -> int;
-  
+
   void BuyNewTicketFailed(const UserName &username);
 
   auto CheckLogin(const UserName &username, UserInfo &dest) -> bool;
