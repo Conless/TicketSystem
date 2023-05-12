@@ -9,7 +9,7 @@
 
 #include "common/exception.h"
 
-namespace sjtu {
+namespace conless {
 template <class T>
 class list {  // NOLINT
  private:
@@ -228,6 +228,6 @@ class list {  // NOLINT
 
 template class list<int>;
 
-}  // namespace sjtu
+}  // namespace conless
 
 #endif

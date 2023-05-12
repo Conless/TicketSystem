@@ -9,7 +9,7 @@
 #include <functional>
 #include "common/exception.h"
 
-namespace sjtu {
+namespace conless {
 
 template <class Key, class T, class Compare = std::less<Key>>
 class RBTree {
@@ -17,7 +17,7 @@ class RBTree {
   /**
    * the internal type of data.
    * it should have a default constructor, a copy constructor.
-   * You can use sjtu::map as value_type by typedef.
+   * You can use conless::map as value_type by typedef.
    */
   using value_type = std::pair<const Key, T>;
 
@@ -929,6 +929,6 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
 
 template class map<std::string, int>;
 
-}  // namespace sjtu
+}  // namespace conless
 
 #endif

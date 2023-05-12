@@ -1,4 +1,0 @@
-#ifndef TICKET_SYSTEM_STRING_H
-#define TICKET_SYSTEM_STRING_H
-
-#endif

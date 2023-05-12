@@ -4,7 +4,7 @@
 #include <random>
 
 #include "storage/index/b_plus_tree_index_nts.h"
-#include "storage/index/custom_key.h"
+#include "container/custom_key.h"
 // #include "test_util.h"  // NOLINT
 
 using namespace bustub;  // NOLINT
@@ -38,7 +38,7 @@ void write(int num) {  // NOLINT
   putchar(num % 10 + '0');
 }
 
-auto main() -> int {
+void Operate() {
   // std::ofstream out("test.log");
   std::ios::sync_with_stdio(false);
   PairKey<StringKey<65>, int>::Comparator comp_key(ComparatorType::CompareFirst);
@@ -79,5 +79,4 @@ auto main() -> int {
     // out << t << '\n';
     // out << tree.container_->DrawBPlusTree();
   }
-  return 0;
 }

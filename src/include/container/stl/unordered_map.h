@@ -5,11 +5,11 @@
 
 #include "container/stl/map.h"
 
-namespace sjtu {
+namespace conless {
 
 template <class Key, class T, class Compare = std::less<Key>>
 class unordered_map : public map<Key, T, Compare> {};  // NOLINT
 
-}  // namespace sjtu
+}  // namespace conless
 
 #endif

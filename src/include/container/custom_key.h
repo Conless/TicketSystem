@@ -90,6 +90,23 @@ class StringKey : public Key {
   explicit StringKey(const std::string &str) : StringKey(str.c_str()) {}
 
  public:
+  class Comparator {
+   public:
+    Comparator() = default;
+    Comparator(const Comparator &) = default;
+    Comparator(Comparator &&) noexcept = default;
+    inline auto operator()(const StringKey<Length> &lhs, const StringKey<Length> &rhs) const -> int {
+      if (lhs < rhs) {
+        return -1;
+      }
+      if (rhs < lhs) {
+        return 1;
+      }
+      return 0;
+    }
+  };
+
+ public:
   inline auto ToString() const -> std::string override { return std::string(str_); }
   auto Empty() const -> bool { return str_[0] == '\0'; }
   friend auto operator<(const StringKey<Length> &lhs, const StringKey<Length> &rhs) -> bool {
