@@ -51,7 +51,7 @@ class BPlusTreeIndex<KeyType, ValueType, KeyComparator, true> : public Index {
 
   void Delete(const KeyType &key, Transaction *transaction = nullptr);
 
-  void Search(const KeyType &key, vector<ValueType> *result, Transaction *transaction = nullptr);
+  auto Find(const KeyType &key, Transaction *transaction = nullptr) -> std::pair<bool, ValueType>;
 
   void Search(const KeyType &key, vector<ValueType> *result, const KeyComparator &comparator,
               Transaction *transaction = nullptr);

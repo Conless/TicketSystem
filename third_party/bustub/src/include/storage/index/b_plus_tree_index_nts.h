@@ -10,7 +10,7 @@
 
 #ifdef REPLACE_STL
 #include "container/stl/vector.h"
-using sjtu::vector;  // NOLINT
+using conless::vector;  // NOLINT
 #else
 using std::vector;  // NOLINT
 #endif
@@ -38,7 +38,7 @@ class BPlusTreeIndex<KeyType, ValueType, KeyComparator, false> : public Index {
 
   void Delete(const KeyType &key, Transaction *transaction = nullptr);
 
-  void Search(const KeyType &key, vector<ValueType> *result, Transaction *transaction = nullptr);
+  auto Find(const KeyType &key, Transaction *transaction = nullptr) -> std::pair<bool, ValueType>;
 
   void Search(const KeyType &key, vector<ValueType> *result, const KeyComparator &comparator,
               Transaction *transaction = nullptr);

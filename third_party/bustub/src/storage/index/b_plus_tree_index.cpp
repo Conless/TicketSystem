@@ -64,8 +64,13 @@ void BPLUSTREE_INDEX_TYPE::ScanKey(const Tuple &key, std::vector<RID> *result, T
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-void BPLUSTREE_INDEX_TYPE::Search(const KeyType &key, vector<ValueType> *result, Transaction *transaction) {
-  container_->GetValue(key, result, transaction);
+auto BPLUSTREE_INDEX_NTS_TYPE::Find(const KeyType &key, Transaction *transaction) -> std::pair<bool, ValueType> {
+  vector<ValueType> result;
+  container_->GetValue(key, &result, transaction);
+  if (result.empty()) {
+    return {false, ValueType()};
+  }
+  return {true, result.front()};
 }
 
 INDEX_TEMPLATE_ARGUMENTS
@@ -98,7 +103,7 @@ auto BPLUSTREE_INDEX_TYPE::GetEndIterator() -> INDEXITERATOR_TYPE { return conta
 }  // namespace bustub
 
 #ifdef CUSTOMIZED_BUSTUB
-#include "storage/index/custom_key.h"
+#include "container/custom_key.h"
 BUSTUB_DECLARE(BPlusTreeIndex)
 #else
 #ifndef BUSTUB_DECLARE
