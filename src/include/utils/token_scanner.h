@@ -17,6 +17,8 @@ class Parser {
   explicit Parser(const std::string &input);
   auto GetString(char opt) const -> std::string;
   auto GetInt(char opt) const -> int;
+  auto GetVector(char opt) const -> const vector<std::string> &;
+  auto GetChar(char opt) const -> char;
 
  public:
   int timestamp_;

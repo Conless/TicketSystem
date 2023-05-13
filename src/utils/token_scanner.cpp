@@ -75,5 +75,15 @@ auto Parser::GetInt(char opt) const -> int {
   return std::stoi(parameters_[opt - 'a'].front());
 }
 
+auto Parser::GetVector(char opt) const -> const vector<std::string> & {
+  return parameters_[opt - 'a'];
+}
+
+auto Parser::GetChar(char opt) const -> char {
+  if (parameters_[opt - 'a'].empty()) {
+    return '\0';
+  }
+  return parameters_[opt - 'a'].front()[0];
+}
 
 }  // namespace conless

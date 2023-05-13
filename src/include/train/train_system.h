@@ -14,7 +14,7 @@ class TrainSystem {
   ~TrainSystem() = default;
 
  public:
-  auto AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<StationID> &stations,
+  auto AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
                 const vector<std::string> &prices, const std::string &start_time,
                 const vector<std::string> &travel_times, const vector<std::string> &stopover_times,
                 const vector<std::string> &sale_date, char type) -> bool;
@@ -25,9 +25,9 @@ class TrainSystem {
 
   auto QueryTrain(const TrainID &train_id, const std::string &date) -> std::string;
 
-  auto QueryTicket(int date, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
+  auto QueryTicket(const std::string &date_str, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
 
-  auto QueryTransfer(int date, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
+  auto QueryTransfer(const std::string &date_str, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
 
   auto BuyTicket(const TicketInfo &ticket, bool wait_tag) -> std::string;
 

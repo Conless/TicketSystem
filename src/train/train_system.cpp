@@ -13,7 +13,7 @@ TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
       train_station_info_db_(file_name + "_train_station_info"),
       ticket_info_db_(file_name + "_ticket_info") {}
 
-auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<StationID> &stations,
+auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
                            const vector<std::string> &prices, const std::string &start_time,
                            const vector<std::string> &travel_times, const vector<std::string> &stopover_times,
                            const vector<std::string> &sale_date, char type) -> bool {
@@ -29,7 +29,7 @@ auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_nu
                        type};
 
   for (int i = 0; i < station_num; i++) {
-    train_info.stations_id_[i] = stations[i];
+    train_info.stations_id_[i] = StationID{stations[i]};
     if (i > 0) {
       train_info.prices_[i] = train_info.prices_[i - 1] + std::stoi(prices[i - 1]);
       train_info.arr_times_[i] = train_info.dep_times_[i - 1] + std::stoi(travel_times[i - 1]);
@@ -88,7 +88,9 @@ auto TrainSystem::QueryTrain(const TrainID &train_id, const std::string &date) -
   return to_string(train_info, date_num);
 }
 
-auto TrainSystem::QueryTicket(int date, const StationID &start, const StationID &dest, int sort_tag) -> std::string {
+auto TrainSystem::QueryTicket(const std::string &date_str, const StationID &start, const StationID &dest, int sort_tag)
+    -> std::string {
+  int date = date_to_int(date_str);
   // Find all the trains via the start and destination
   vector<TrainStationInfo> start_trains_station_info;
   train_station_info_db_.Search({start, ""}, &start_trains_station_info, TrainStationID::Comparator(CompareFirst));
@@ -205,7 +207,9 @@ auto TrainSystem::GetEarliestDate(const TrainInfo &train_info, int station_index
   return arr_date;
 }
 
-auto TrainSystem::QueryTransfer(int date, const StationID &start, const StationID &dest, int sort_tag) -> std::string {
+auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &start, const StationID &dest,
+                                int sort_tag) -> std::string {
+  int date = date_to_int(date_str);
   vector<TrainStationInfo> start_trains_station_info;
   train_station_info_db_.Search({start, ""}, &start_trains_station_info, TrainStationID::Comparator(CompareFirst));
   if (start_trains_station_info.empty()) {
