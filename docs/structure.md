@@ -10,8 +10,8 @@ class TicketSystem {
 
   /* and other operations below */
  private:
-  UserSystem user_sys;
-  TrainSystem train_sys;
+  UserSystem user_sys_;
+  TrainSystem train_sys_;
 };
 ```
 
@@ -195,6 +195,7 @@ struct UserInfo {
   UserPassword password_;
   UserEmail email_;
   UserPrivilege privilege_;
+  bool login_status_{false};
   int ticket_count_{0};
 };
 ```
@@ -209,7 +210,7 @@ class UserSystem {
   /* and other operations below */
 
  private:
-  BPlusTreeIndex<UserID, UserInfo> user_info_db_;
+  BPlusTreeIndex<UserName, UserInfo> user_info_db_;
 };
 ```
 
@@ -241,14 +242,14 @@ it return the output information if query succeed, "-1" otherwise (i.e. username
 
 The function ModifyProfile() provides the similar operation as register.
 ```cpp
-auto ModifyProfile(const UserName &cur_username, const UserName &username, const UserPassword &passwd, const UserNickname &nickname, const UserEmail &mail_addr, const UserPrivilege &priv) -> bool;
+auto ModifyProfile(const UserName &cur_username, const UserName &username, const UserPassword &passwd, const UserNickname &nickname, const UserEmail &mail_addr, const UserPrivilege &priv) -> std::string;
 ```
-Sometimes you may not use some of the arguments. In such case you can simply set them to empty.
+Sometimes you may not use some of the arguments. In such case you can simply set them to empty (priv to -1).
 
-The function GetNextTicket() and BuyNewTicket() check the login status and increase ticket_count_.
+The function BuyNewTicket() and BuyNewTicketFailed() check the login status and increase ticket_count_.
 ```cpp
-auto GetNextTicket(const UserName &username) -> int;
-void BuyNewTicket(const UserName &username);
+auto BuyNewTicket(const UserName &username) -> int;
+void BuyNewTicketFailed(const UserName &username);
 ```
 First one would return -1 if the user isn't logined.
 

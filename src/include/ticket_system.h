@@ -10,6 +10,9 @@ class TicketSystem {
   explicit TicketSystem(const std::string &file_name, bool inherit_file = true);
   ~TicketSystem() = default;
 
+  void AcceptMsg(const std::string &input);
+
+ private:
   void AddUser(int timestamp, const std::string &cur_username, const std::string &username, const std::string &passwd,
                const std::string &name, const std::string &mail_addr, int priv);
 
@@ -23,6 +26,7 @@ class TicketSystem {
                      const std::string &passwd, const std::string &name, const std::string &mail_addr, int priv);
 
  private:
+  const bool initialized_;
   UserSystem user_sys_;
   // TrainSystem train_sys_;
 };
