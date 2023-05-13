@@ -8,7 +8,6 @@ void UserSystem::Init(const UserName &username, const UserPassword &passwd, cons
                       const UserEmail &mail_addr) {
   UserInfo new_user_info{username, nickname, passwd, mail_addr, 10};
   user_info_db_.Insert(username, new_user_info);
-  return true;
 }
 
 auto UserSystem::AddUser(const UserName &cur_username, const UserName &username, const UserPassword &passwd,
@@ -69,10 +68,18 @@ auto UserSystem::ModifyProfile(const UserName &cur_username, const UserName &use
   if (cur_user_info.privilege_ < target_user_iter->second.privilege_) {
     return "-1";
   }
-  target_user_iter->second.password_ = passwd;
-  target_user_iter->second.user_nickname_ = nickname;
-  target_user_iter->second.email_ = mail_addr;
-  target_user_iter->second.privilege_ = priv;
+  if (passwd != "") {
+    target_user_iter->second.password_ = passwd;
+  }
+  if (nickname != "") {
+    target_user_iter->second.user_nickname_ = nickname;
+  }
+  if (mail_addr != "") {
+    target_user_iter->second.email_ = mail_addr;
+  }
+  if (priv != -1) {
+    target_user_iter->second.privilege_ = priv;
+  }
   return std::string{target_user_iter->second};
 }
 
@@ -89,9 +96,17 @@ void UserSystem::BuyNewTicketFailed(const UserName &username) {
   --user_iter->second.ticket_count_;
 }
 
+auto UserSystem::Initialized() const -> bool {
+  return !user_info_db_.Empty();
+}
+
 auto UserSystem::CheckLogin(const UserName &username, UserInfo &dest) -> bool {
   auto user_find_res = user_info_db_.Find(username);
-  return user_find_res.first && !user_find_res.second.login_status_;
+  if (!user_find_res.first) {
+    return false;
+  }
+  dest = user_find_res.second;
+  return dest.login_status_;
 }
 
 }  // namespace conless

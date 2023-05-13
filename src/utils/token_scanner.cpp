@@ -56,11 +56,6 @@ Parser::Parser(const std::string &input) {
     }
     parameters_[input_str[i][1] - 'a'] = Lexer(input_str[i + 1], '|');
   }
-  for (auto & parameter : parameters_) {
-    if (parameter.empty()) {
-      parameter.push_back("");
-    }
-  }
 }
 
 auto Parser::GetString(char opt) -> std::string {

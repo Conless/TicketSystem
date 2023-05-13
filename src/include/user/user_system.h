@@ -32,6 +32,8 @@ class UserSystem {
 
   void BuyNewTicketFailed(const UserName &username);
 
+  auto Initialized() const -> bool;
+
   auto CheckLogin(const UserName &username, UserInfo &dest) -> bool;
 
  private:

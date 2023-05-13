@@ -54,7 +54,7 @@ void TicketSystem::AcceptMsg(const std::string &input) {
 
 void TicketSystem::AddUser(int timestamp, const std::string &cur_username, const std::string &username,
                            const std::string &passwd, const std::string &name, const std::string &mail_addr, int priv) {
-  if (cur_username.empty() && priv == -1) {
+  if (!user_sys_.Initialized()) {
     user_sys_.Init(UserName(username), UserPassword(passwd), UserNickname(name), UserEmail(mail_addr));
     std::cout << "[" << timestamp << "] "
               << "0\n";
@@ -94,14 +94,14 @@ void TicketSystem::Logout(int timestamp, const std::string &username) {
 }
 
 void TicketSystem::QueryProfile(int timestamp, const std::string &cur_username, const std::string &username) {
-  std::cout << user_sys_.QueryProfile(UserName(cur_username), UserName(username)) << '\n';
+  std::cout << "[" << timestamp << "] " << user_sys_.QueryProfile(UserName(cur_username), UserName(username)) << '\n';
 }
 
 void TicketSystem::ModifyProfile(int timestamp, const std::string &cur_username, const std::string &username,
                                  const std::string &passwd, const std::string &name, const std::string &mail_addr,
                                  int priv) {
-  std::cout << user_sys_.ModifyProfile(UserName(cur_username), UserName(username), UserPassword(passwd),
-                                       UserNickname(name), UserEmail(mail_addr), priv);
+  std::cout << "[" << timestamp << "] " << user_sys_.ModifyProfile(UserName(cur_username), UserName(username), UserPassword(passwd),
+                                       UserNickname(name), UserEmail(mail_addr), priv) << '\n';
 }
 
 }  // namespace conless
