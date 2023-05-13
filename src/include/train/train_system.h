@@ -15,14 +15,15 @@ class TrainSystem {
 
  public:
   auto AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<StationID> &stations,
-                const vector<int> &prices, const vector<int> &dep_time, const vector<int> &arr_time, int start_date,
-                int end_date, char type) -> bool;
+                const vector<std::string> &prices, const std::string &start_time,
+                const vector<std::string> &travel_times, const vector<std::string> &stopover_times,
+                const vector<std::string> &sale_date, char type) -> bool;
 
   auto DeleteTrain(const TrainID &train_id) -> bool;
 
-  auto ReleasedTrain(const TrainID &train_id) -> bool;
+  auto ReleaseTrain(const TrainID &train_id) -> bool;
 
-  auto QueryTrain(const TrainID &train_id, int date) -> std::string;
+  auto QueryTrain(const TrainID &train_id, const std::string &date) -> std::string;
 
   auto QueryTicket(int date, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
 
