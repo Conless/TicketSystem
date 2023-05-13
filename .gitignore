@@ -1,6 +1,6 @@
 .cache/
 bin/
 build/
-data/
+**/data/
 samples/
 .DS_Store
