@@ -276,7 +276,9 @@ class vector {  // NOLINT
     start_.ptr_ = alloc_.allocate(other.capacity());
     finish_ = start_ + other.size();
     end_of_storage_ = start_ + other.capacity();
-    std::copy(other.start_, other.finish_, start_);
+    for (auto it1 = start_, it2 = other.start_; it2 != other.finish_; it2++) {
+      alloc_.construct(it1.ptr_, *it2);
+    }
     return *this;
   }
   /**
