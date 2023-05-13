@@ -29,10 +29,11 @@ auto UserSystem::Login(const UserName &username, const UserPassword &passwd) -> 
   if (user_info_iter.IsEnd() || user_info_iter->second.login_status_) {
     return false;
   }
-  if (user_info_iter->second.password_ != passwd) {
+  auto &user_info = user_info_iter->second;
+  if (user_info.password_ != passwd) {
     return false;
   }
-  user_info_iter->second.login_status_ = true;
+  user_info.login_status_ = true;
   return true;
 }
 
@@ -41,7 +42,8 @@ auto UserSystem::Logout(const UserName &username) -> bool {
   if (user_info_iter.IsEnd() || !user_info_iter->second.login_status_) {
     return false;
   }
-  user_info_iter->second.login_status_ = false;
+  auto &user_info = user_info_iter->second;
+  user_info.login_status_ = false;
   return true;
 }
 
@@ -65,35 +67,38 @@ auto UserSystem::ModifyProfile(const UserName &cur_username, const UserName &use
     return "-1";
   }
   auto target_user_iter = user_info_db_.GetIterator(username);
-  if (cur_user_info.privilege_ <= target_user_iter->second.privilege_ && cur_username != username) {
+  auto &user_info = target_user_iter->second;
+  if (cur_user_info.privilege_ <= user_info.privilege_ && cur_username != username) {
     return "-1";
   }
   if (passwd != "") {
-    target_user_iter->second.password_ = passwd;
+    user_info.password_ = passwd;
   }
   if (nickname != "") {
-    target_user_iter->second.user_nickname_ = nickname;
+    user_info.user_nickname_ = nickname;
   }
   if (mail_addr != "") {
-    target_user_iter->second.email_ = mail_addr;
+    user_info.email_ = mail_addr;
   }
   if (priv != -1) {
-    target_user_iter->second.privilege_ = priv;
+    user_info.privilege_ = priv;
   }
-  return std::string{target_user_iter->second};
+  return std::string{user_info};
 }
 
 auto UserSystem::BuyNewTicket(const UserName &username) -> int {
-  auto user_iter = user_info_db_.GetIterator(username);
-  if (!user_iter->second.login_status_) {
+  auto user_info_iter = user_info_db_.GetIterator(username);
+  if (!user_info_iter->second.login_status_) {
     return -1;
   }
-  return ++user_iter->second.ticket_count_;
+  auto &user_info = user_info_iter->second;
+  return ++user_info.ticket_count_;
 }
 
 void UserSystem::BuyNewTicketFailed(const UserName &username) {
-  auto user_iter = user_info_db_.GetIterator(username);
-  --user_iter->second.ticket_count_;
+  auto user_info_iter = user_info_db_.GetIterator(username);
+  auto &user_info = user_info_iter->second;
+  --user_info.ticket_count_;
 }
 
 auto UserSystem::Initialized() const -> bool {
