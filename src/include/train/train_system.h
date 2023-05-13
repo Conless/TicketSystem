@@ -35,6 +35,14 @@ class TrainSystem {
 
   auto RefundTicket(const UserName &username, int order_num);
 
+ protected:
+  void GetStartTrainsInfo(const vector<TrainStationInfo> &start_trains_station_info,
+                          vector<ArrivalInfo> *stations_after_start, vector<TrainInfo> &start_trains_info, int date);
+  void GetDestTrainsInfo(const vector<TrainStationInfo> &dest_trains_station_info,
+                         vector<DepartureInfo> *stations_before_dest, vector<TrainInfo> &dest_trains_info, int date);
+  auto GetEarliestDate(const TrainInfo &train_info, int station_index, int arr_date, int arr_time)
+    -> int;
+
  private:
   BPlusTreeIndex<TrainID, TrainInfo> train_info_db_;
   BPlusTreeIndex<TrainDateID, TrainDateInfo> train_date_info_db_;
