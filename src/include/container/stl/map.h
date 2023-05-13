@@ -7,7 +7,7 @@
 // only for std::less<T>
 #include <cstddef>
 #include <functional>
-#include "common/exception.h"
+#include "utils/exceptions.h"
 
 namespace conless {
 
@@ -126,7 +126,7 @@ class RBTree {
         ptr = ptr->parent_;
       }
       if (ptr->parent_ == nullptr) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       ptr = ptr->parent_;
     }
@@ -135,7 +135,7 @@ class RBTree {
 
   auto next(Tnode *ptr) const -> Tnode * {  // NOLINT
     if (ptr == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     if (ptr->right_) {
       ptr = ptr->right_;
@@ -511,7 +511,7 @@ class RBTree {
    */
   void left_rotate(Tnode *cur) {  // NOLINT
     if (cur->right_ == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::INVALID, "The node to rotate (left) doesn't have a right child.");
+      throw Exception("The node to rotate (left) doesn't have a right child.");
     }
     if (cur->parent_) {
       if (is_left(cur)) {
@@ -547,7 +547,7 @@ class RBTree {
    */
   void right_rotate(Tnode *cur) {  // NOLINT
     if (cur->left_ == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::INVALID, "The node to rotate (right) doesn't have a left child.");
+      throw Exception("The node to rotate (right) doesn't have a left child.");
     }
     if (cur->parent_) {
       if (is_left(cur)) {
@@ -664,7 +664,7 @@ class RBTree {
    */
   auto is_left(Tnode *cur) const -> bool {  // NOLINT
     if (cur->parent_ == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::INVALID, "Unexpected operations on the root node.");
+      throw Exception("Unexpected operations on the root node.");
     }
     return cur->parent_->left_ == cur;
   }
@@ -754,7 +754,7 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
      */
     auto operator++(int) -> base_iterator {
       if (ptr_ == nullptr) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       base_iterator cp = *this;
       ptr_ = iter_->next(ptr_);
@@ -765,7 +765,7 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
      */
     auto operator++() -> base_iterator & {
       if (ptr_ == nullptr) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       ptr_ = iter_->next(ptr_);
       return *this;
@@ -781,7 +781,7 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
         ptr_ = iter_->prev(ptr_);
       }
       if (ptr_ == nullptr) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       return cp;
     }
@@ -795,7 +795,7 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
         ptr_ = iter_->prev(ptr_);
       }
       if (ptr_ == nullptr) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       return *this;
     }
@@ -845,14 +845,14 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
   auto at(const Key &key) -> T & {  // NOLINT
     Tnode *res = RBTree<Key, T, Compare>::find(key);
     if (res == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return RBTree<Key, T, Compare>::find(key)->data_.second;
   }
   auto at(const Key &key) const -> const T & {  // NOLINT
     Tnode *res = RBTree<Key, T, Compare>::find(key);
     if (res == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return RBTree<Key, T, Compare>::find(key)->data_.second;
   }
@@ -897,7 +897,7 @@ class map : public RBTree<Key, T, Compare> {  // NOLINT
    */
   void erase(iterator pos) {  // NOLINT
     if (pos.iter_ != this || pos.ptr_ == nullptr) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     RBTree<Key, T, Compare>::erase(pos.ptr_->data_.first);
   }

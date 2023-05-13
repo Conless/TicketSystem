@@ -62,7 +62,7 @@ class list {  // NOLINT
      */
     auto operator++(int) -> base_iterator {
       if (ptr_ == nullptr || ptr_ == iter_->tail_) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       base_iterator cp = *this;
       ptr_ = ptr_->next_;
@@ -73,7 +73,7 @@ class list {  // NOLINT
      */
     auto operator++() -> base_iterator & {
       if (ptr_ == nullptr || ptr_ == iter_->tail_) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       ptr_ = ptr_->next_;
       return *this;
@@ -83,7 +83,7 @@ class list {  // NOLINT
      */
     auto operator--(int) -> base_iterator {
       if (ptr_ == nullptr || ptr_->prev_ == iter_->head_) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       base_iterator cp = *this;
       ptr_ = ptr_->prev_;
@@ -94,7 +94,7 @@ class list {  // NOLINT
      */
     auto operator--() -> base_iterator & {
       if (ptr_ == nullptr || ptr_->prev_ == iter_->head_) {
-        throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+        throw Exception("index out of range");
       }
       ptr_ = ptr_->prev_;
       return *this;
@@ -174,13 +174,13 @@ class list {  // NOLINT
 
   auto front() const -> const T & {  // NOLINT
     if (empty()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return head_->next_->data_;
   }
   auto tail() const -> const T & {  // NOLINT
     if (empty()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return tail_->prev_->data_;
   }
@@ -210,13 +210,13 @@ class list {  // NOLINT
 
   void pop_front() {  // NOLINT
     if (empty()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     erase({this, head_->next_});
   }
   void pop_back() {  // NOLINT
     if (empty()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     erase({this, tail_->prev_});
   }

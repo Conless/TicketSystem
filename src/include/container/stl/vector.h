@@ -1,7 +1,7 @@
 #ifndef SJTU_VECTOR_H
 #define SJTU_VECTOR_H
 
-#include "common/exception.h"
+#include "utils/exceptions.h"
 #include "storage/page/page_guard.h"
 
 #include <cmath>
@@ -79,7 +79,7 @@ class vector {  // NOLINT
     // if these two iterators point to different vectors, throw invaild_iterator.
     auto operator-(const iterator &rhs) const -> int {
       if (iter_ != rhs.iter_) {
-        throw bustub::Exception(bustub::ExceptionType::MISMATCH_TYPE, "pointing to different iter");
+        throw Exception("pointing to different iter");
       }
       return ptr_ - rhs.ptr_;
     }
@@ -173,7 +173,7 @@ class vector {  // NOLINT
     // if these two iterators point to different vectors, throw invaild_iterator.
     auto operator-(const const_iterator &rhs) const -> int {
       if (iter_ != rhs.iter_) {
-        throw bustub::Exception(bustub::ExceptionType::MISMATCH_TYPE, "pointing to different iter");
+        throw Exception("pointing to different iter");
       }
       return ptr_ - rhs.ptr_;
     }
@@ -287,13 +287,13 @@ class vector {  // NOLINT
    */
   auto at(const size_type &pos) -> reference {  // NOLINT
     if (pos >= size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return *(begin() + pos);
   }
   auto at(const size_type &pos) const -> const_reference {  // NOLINT
     if (pos >= size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return *(cbegin() + pos);
   }
@@ -305,13 +305,13 @@ class vector {  // NOLINT
    */
   auto operator[](const size_type &pos) -> reference {
     if (pos >= size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return *(begin() + pos);
   }
   auto operator[](const size_type &pos) const -> const_reference {
     if (pos >= size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return *(cbegin() + pos);
   }
@@ -321,13 +321,13 @@ class vector {  // NOLINT
    */
   auto front() -> reference {  // NOLINT
     if (!size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
+      throw Exception("container is empty");
     }
     return *begin();
   };
   auto front() const -> const_reference {  // NOLINT
     if (!size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
+      throw Exception("container is empty");
     }
     return *cbegin();
   };
@@ -337,13 +337,13 @@ class vector {  // NOLINT
    */
   auto back() -> reference {  // NOLINT
     if (!size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
+      throw Exception("container is empty");
     }
     return *std::prev(end().ptr_);
   }
   auto back() const -> const_reference {  // NOLINT
     if (!size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
+      throw Exception("container is empty");
     }
     return *std::prev(cend().ptr_);
   }
@@ -409,7 +409,7 @@ class vector {  // NOLINT
    */
   auto insert(iterator pos, const value_type &value) -> iterator {  // NOLINT
     if (pos.ptr_ < start_.ptr_ || pos.ptr_ > finish_.ptr_) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     int index = pos - start_;
     if (finish_ == end_of_storage_) {
@@ -431,7 +431,7 @@ class vector {  // NOLINT
    */
   auto insert(const size_t &pos, const T &data) -> iterator {  // NOLINT
     if (pos > size()) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     return insert(begin() + pos, data);
   }
@@ -442,7 +442,7 @@ class vector {  // NOLINT
    */
   auto erase(iterator pos) -> iterator {  // NOLINT
     if (pos.ptr_ < start_.ptr_ || pos.ptr_ >= finish_.ptr_) {
-      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "index out of range");
+      throw Exception("index out of range");
     }
     if (pos + 1 != finish_) {
       std::copy(pos + 1, finish_, pos);
