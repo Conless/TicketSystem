@@ -1,10 +1,17 @@
 set(PROJECT_NAME ${CMAKE_PROJECT_NAME})
 
-set(TICKET_SYSTEM_SOURCE_CPPS
-  ticket_system.cpp
+set(USER_SOURCE_CPPS
+  user/user_system.cpp
+  user/user_type.cpp
 )
 
-add_library(ticket_system ${TICKET_SYSTEM_SOURCE_CPPS})
+set(TRAIN_SOURCE_CPPS)
+
+set(UTILS_SOURCE_CPPS
+  utils/token_scanner.cpp
+)
+
+add_library(ticket_system ${USER_SOURCE_CPPS} ${TRAIN_SOURCE_CPPS} ${UTILS_SOURCE_CPPS} ticket_system.cpp)
 
 target_link_libraries(ticket_system bustub)
 target_include_directories(ticket_system PUBLIC ${BUSTUB_INCLUDE_DIR} ${TICKET_SYSTEM_INCLUDE_DIR})

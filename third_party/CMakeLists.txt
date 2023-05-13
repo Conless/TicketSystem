@@ -15,9 +15,11 @@ set(BUSTUB_SOURCE_CPPS
     bustub/src/storage/index/b_plus_tree_index.cpp
 )
 
-
+add_executable(example bustub/src/main.cpp)
 
 add_library(bustub ${BUSTUB_SOURCE_CPPS})
 
 target_include_directories(bustub PUBLIC ${BUSTUB_INCLUDE_DIR} ${BUSTUB_TEST_INCLUDE_DIR} ${BUSTUB_THIRD_PARTY_INCLUDE_DIR} ${TICKET_SYSTEM_INCLUDE_DIR})
 
+target_include_directories(example PUBLIC ${BUSTUB_INCLUDE_DIR} ${BUSTUB_TEST_INCLUDE_DIR} ${BUSTUB_THIRD_PARTY_INCLUDE_DIR} ${TICKET_SYSTEM_INCLUDE_DIR})
+target_link_libraries(example bustub)
