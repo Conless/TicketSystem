@@ -34,6 +34,8 @@ class BPlusTreeIndex<KeyType, ValueType, KeyComparator, false> : public Index {
 
   void ScanKey(const Tuple &key, std::vector<RID> *result, Transaction *transaction) override;
 
+  auto Empty() const -> bool;
+
   auto Insert(const KeyType &key, const ValueType &value, Transaction *transaction = nullptr) -> bool;
 
   void Delete(const KeyType &key, Transaction *transaction = nullptr);

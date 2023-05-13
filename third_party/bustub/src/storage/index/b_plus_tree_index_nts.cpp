@@ -52,6 +52,11 @@ BPLUSTREE_INDEX_NTS_TYPE::~BPlusTreeIndex() {
 }
 
 INDEX_TEMPLATE_ARGUMENTS
+auto BPLUSTREE_INDEX_NTS_TYPE::Empty() const -> bool {
+  return container_->IsEmpty();
+}
+
+INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_NTS_TYPE::InsertEntry(const Tuple &key, RID rid, Transaction *transaction) -> bool {
   UNIMPLEMENTED("bpt index doesn't support it.");
 }

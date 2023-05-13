@@ -39,6 +39,11 @@ BPLUSTREE_INDEX_TYPE::BPlusTreeIndex(const std::string &file_name, const KeyComp
 }
 
 INDEX_TEMPLATE_ARGUMENTS
+auto BPLUSTREE_INDEX_TYPE::Empty() const -> bool {
+  return container_->IsEmpty();
+}
+
+INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_TYPE::InsertEntry(const Tuple &key, RID rid, Transaction *transaction) -> bool {
   UNIMPLEMENTED("bpt index doesn't support it.");
 }
@@ -64,7 +69,7 @@ void BPLUSTREE_INDEX_TYPE::ScanKey(const Tuple &key, std::vector<RID> *result, T
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_INDEX_NTS_TYPE::Find(const KeyType &key, Transaction *transaction) -> std::pair<bool, ValueType> {
+auto BPLUSTREE_INDEX_TYPE::Find(const KeyType &key, Transaction *transaction) -> std::pair<bool, ValueType> {
   vector<ValueType> result;
   container_->GetValue(key, &result, transaction);
   if (result.empty()) {
