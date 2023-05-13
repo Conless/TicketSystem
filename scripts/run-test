@@ -28,8 +28,8 @@ if [ -z "$list" ]; then
 fi
 
 exename="code"
-if [ ! -e "$exename" ]; then
-  echo "Please compile the ticket system and place the executable at \"$exename\""
+if [ ! -e "build/$exename" ]; then
+  echo "Please compile the ticket system and place the executable at \"build/$exename\""
   exit 1
 fi
 
@@ -50,7 +50,7 @@ function tmpdir () {
 }
 
 testdir="$(tmpdir)"
-cp "$exename" "$testdir/"
+cp "build/$exename" "$testdir/"
 exe="$testdir/$exename"
 cwd="$(pwd)"
 basedir="$cwd/samples/$1"
