@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
 project(TicketSystem)
 
-set(CMAKE_CXX_FLAGS "-g -O1")
+set(CMAKE_CXX_FLAGS "-g -O0")
 
 set(TICKET_SYSTEM_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/src/include)
 

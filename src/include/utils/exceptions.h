@@ -10,7 +10,7 @@ namespace conless {
 class Exception : public std::exception {
  public:
   explicit Exception(std::string what) : what_(std::move(what)) {}
-  auto what() -> std::string { return what_; }
+  auto what()  const noexcept -> const char* override{ return what_.c_str(); }
 
  private:
   std::string what_;
