@@ -382,13 +382,13 @@ It returns the total price if succeeds, "queue" if waitlisted and "-1" if failed
 
 The function QueryOrder access ticket_info database and find the assoicated orders.
 ```cpp
-auto QueryOrder(const UserId &user_id) -> std::string;
+auto QueryOrder(const UserName &username) -> std::string;
 ```
 It returns "" if not found order.
 
 The function RefundTicket performs such operation:
 ```cpp
-auto RefundTicket(const UserId &user_id, int order_num);
+auto RefundTicket(const UserName &username, int order_num);
 ```
 1. Access ticket_info database, find corresponding order and edit its status.
 2. Access train_data_info database and edit the remain_ticket_ or waitlist.
