@@ -1,5 +1,4 @@
 #include "user/user_type.h"
-#include <string>
 
 namespace conless {
 UserInfo::operator std::string() {

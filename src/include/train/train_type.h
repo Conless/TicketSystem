@@ -15,13 +15,16 @@ using TicketID = PairKey<UserName, int>;
 constexpr int STATION_NUM_MAX = 100;
 constexpr int WAITLIST_LENGTH = 100;
 
-struct TrainInfo { // 5256 bytes
+constexpr int TIME_MAX_IN_DAY = 24 * 60;
+
+struct TrainInfo {
   TrainID train_id_;
   int seat_num_;
   int station_num_;
 
   StationID station_id_[STATION_NUM_MAX];
   int prices_[STATION_NUM_MAX];
+  int start_time_;
   int dep_time_[STATION_NUM_MAX];
   int arr_time_[STATION_NUM_MAX];
   
@@ -53,6 +56,14 @@ struct TicketInfo {
   int quantity_;
   int price_;
 };
+
+// Convert a date between int and std::string
+auto date_to_int(const std::string &date) -> int; // NOLINT
+auto date_to_string(int date) -> std::string;     // NOLINT
+
+// Convert a time between int and std::string
+auto time_to_int(const std::string &time) -> int; // NOLINT
+auto time_to_string(int time) -> std::string;     // NOLINT
 
 auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info) -> std::string; // NOLINT
 
