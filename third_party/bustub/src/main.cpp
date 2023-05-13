@@ -8,6 +8,7 @@
 // #include "test_util.h"  // NOLINT
 
 using namespace bustub;  // NOLINT
+using namespace conless; // NOLINT
 
 void read(char *str) {  // NOLINT
   do {
@@ -38,7 +39,7 @@ void write(int num) {  // NOLINT
   putchar(num % 10 + '0');
 }
 
-void Operate() {
+auto main() -> int {
   // std::ofstream out("test.log");
   std::ios::sync_with_stdio(false);
   PairKey<StringKey<65>, int>::Comparator comp_key(ComparatorType::CompareFirst);
@@ -79,4 +80,5 @@ void Operate() {
     // out << t << '\n';
     // out << tree.container_->DrawBPlusTree();
   }
+  return 0;
 }

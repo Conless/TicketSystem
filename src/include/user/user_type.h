@@ -1,11 +1,9 @@
 #ifndef USER_TYPE_H
 #define USER_TYPE_H
 
-#include "container/custom_key.h"
+#include "container/types.h"
 
 namespace conless {
-
-using bustub::StringKey;
 
 using UserName = StringKey<20>;
 using UserNickname = StringKey<20>;
