@@ -7,7 +7,7 @@ to be updated.
 
 ## Plan
 - [x] 05-11 Draw an outline for the project and design the basic structure.
-- [ ] 05-12 Utils for input operations. User system.
+- [x] 05-12 Utils for input operations. User system.
 - [ ] 05-14 Train system.
 - [ ] 05-15 Input and output operations. Finish the main part.
 - [ ] 05-16 Start debugging.
