@@ -2,9 +2,7 @@
 
 #include <filesystem>
 
-#include "user/user_system.h"
 #include "utils/exceptions.h"
-#include "utils/token_scanner.h"
 
 namespace conless {
 
@@ -26,8 +24,7 @@ TicketSystem::TicketSystem(const std::string &file_name, bool inherit_file)
   }
 }
 
-void TicketSystem::AcceptMsg(const std::string &input) {
-  Parser input_msg(input);
+void TicketSystem::AcceptMsg(const Parser &input_msg) {
   if (input_msg.instruction_ == "add_user") {
     AddUser(input_msg.timestamp_, input_msg.GetString('c'), input_msg.GetString('u'), input_msg.GetString('p'),
             input_msg.GetString('n'), input_msg.GetString('m'), input_msg.GetInt('g'));

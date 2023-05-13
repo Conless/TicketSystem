@@ -51,7 +51,7 @@ auto UserSystem::QueryProfile(const UserName &cur_username, const UserName &user
     return "-1";
   }
   auto target_user_info = user_info_db_.Find(username);
-  if (!target_user_info.first || cur_user_info.privilege_ < target_user_info.second.privilege_) {
+  if (!target_user_info.first || (cur_user_info.privilege_ <= target_user_info.second.privilege_ && cur_username != username)) {
     return "-1";
   }
   return std::string{target_user_info.second};
@@ -65,7 +65,7 @@ auto UserSystem::ModifyProfile(const UserName &cur_username, const UserName &use
     return "-1";
   }
   auto target_user_iter = user_info_db_.GetIterator(username);
-  if (cur_user_info.privilege_ < target_user_iter->second.privilege_) {
+  if (cur_user_info.privilege_ <= target_user_iter->second.privilege_ && cur_username != username) {
     return "-1";
   }
   if (passwd != "") {

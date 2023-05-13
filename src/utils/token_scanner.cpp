@@ -46,26 +46,29 @@ auto ReadTimestamp(const std::string &str) -> int {
 Parser::Parser(const std::string &input) {
   Lexer input_str(input, ' ');
   if (input_str.size() < 2) {
-    throw Exception("Invaild input.");
+    throw Exception("Invaild input \"" + input + "\".");
   }
   timestamp_ = ReadTimestamp(input_str[0]);
   instruction_ = input_str[1];
+  if (instruction_ == "exit") {
+    return;
+  }
   for (int i = 2; i < input_str.size(); i += 2) {
     if (input_str[i].size() != 2 || input_str[i][0] != '-' || std::islower(input_str[i][1]) == 0) {
-      throw Exception("Input invalid parameters.");
+      throw Exception("Invalid input \"" + input + "\"at parameter \"" + input_str[i] +"\" .");
     }
     parameters_[input_str[i][1] - 'a'] = Lexer(input_str[i + 1], '|');
   }
 }
 
-auto Parser::GetString(char opt) -> std::string {
+auto Parser::GetString(char opt) const -> std::string {
   if (parameters_[opt - 'a'].empty()) {
     return "";
   }
   return parameters_[opt - 'a'].front();
 }
 
-auto Parser::GetInt(char opt) -> int {
+auto Parser::GetInt(char opt) const -> int {
   if (parameters_[opt - 'a'].empty()) {
     return -1;
   }

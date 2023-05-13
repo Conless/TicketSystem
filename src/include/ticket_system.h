@@ -2,6 +2,7 @@
 #define TICKET_SYSTEM_H
 
 #include "user/user_system.h"
+#include "utils/token_scanner.h"
 
 namespace conless {
 
@@ -10,7 +11,7 @@ class TicketSystem {
   explicit TicketSystem(const std::string &file_name, bool inherit_file = true);
   ~TicketSystem() = default;
 
-  void AcceptMsg(const std::string &input);
+  void AcceptMsg(const Parser &input_msg);
 
  private:
   void AddUser(int timestamp, const std::string &cur_username, const std::string &username, const std::string &passwd,

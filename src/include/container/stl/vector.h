@@ -325,6 +325,12 @@ class vector {  // NOLINT
     }
     return *begin();
   };
+  auto front() const -> const_reference {  // NOLINT
+    if (!size()) {
+      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
+    }
+    return *cbegin();
+  };
   /**
    * access the last element.
    * throw container_is_empty if size == 0
@@ -334,6 +340,12 @@ class vector {  // NOLINT
       throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
     }
     return *std::prev(end().ptr_);
+  }
+  auto back() const -> const_reference {  // NOLINT
+    if (!size()) {
+      throw bustub::Exception(bustub::ExceptionType::OUT_OF_RANGE, "container is empty");
+    }
+    return *std::prev(cend().ptr_);
   }
   /**
    * returns an iterator to the beginning.

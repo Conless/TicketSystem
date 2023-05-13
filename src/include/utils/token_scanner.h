@@ -15,8 +15,8 @@ class Lexer : public vector<std::string> {
 class Parser {
  public:
   explicit Parser(const std::string &input);
-  auto GetString(char opt) -> std::string;
-  auto GetInt(char opt) -> int;
+  auto GetString(char opt) const -> std::string;
+  auto GetInt(char opt) const -> int;
 
  public:
   int timestamp_;
