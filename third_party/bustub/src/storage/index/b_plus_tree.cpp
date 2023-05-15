@@ -988,7 +988,9 @@ auto BPLUSTREE_TYPE::Find(const KeyType &key) -> INDEXITERATOR_TYPE {
   ReadPageGuard cur_guard = bpm_->FetchPageRead(next_page_id);
   auto cur_page = cur_guard.As<BPlusTreePage>();
   while (!cur_page->IsLeafPage()) {
-    next_page_id = reinterpret_cast<const InternalPage *>(cur_page)->GetLastIndexLE(key, comparator_);
+    auto internal_page = reinterpret_cast<const InternalPage *>(cur_page);
+    int next_index = internal_page->GetLastIndexLE(key, comparator_);
+    next_page_id = internal_page->ValueAt(next_index);
     cur_guard = bpm_->FetchPageRead(next_page_id);
     cur_page = cur_guard.As<BPlusTreePage>();
   }

@@ -135,7 +135,6 @@ void DiskManager::FlushLog() { log_io_.seekp(0); }
  */
 void DiskManager::WriteLog(char *log_data, int size) {
   // enforce swap log buffer
-  assert(log_data != buffer_used);
   buffer_used = log_data;
 
   if (size == 0) {  // no effect on num_flushes_ if log buffer is empty

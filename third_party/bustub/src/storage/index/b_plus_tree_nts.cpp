@@ -735,7 +735,7 @@ auto BPLUSTREE_NTS_TYPE::CoalesceInternalPage(InternalPage *cur_page, InternalPa
     if (size_sum <= internal_max_size_) {
       next_internal_page->SetKeyAt(0, last_page->RemoveData(index + 1).first);
       next_internal_page->CopyFirstNTo(next_internal_page->GetSize(), cur_page);
-        bpm_->DeletePage(next_internal_id);
+      bpm_->DeletePage(next_internal_id);
       coalesced = true;
     }
   }
@@ -865,7 +865,9 @@ auto BPLUSTREE_NTS_TYPE::Find(const KeyType &key) -> INDEXITERATOR_TYPE {
   BasicPageGuard cur_guard = bpm_->FetchPageBasic(next_page_id);
   auto cur_page = cur_guard.As<BPlusTreePage>();
   while (!cur_page->IsLeafPage()) {
-    next_page_id = reinterpret_cast<const InternalPage *>(cur_page)->GetLastIndexLE(key, comparator_);
+    auto internal_page = reinterpret_cast<const InternalPage *>(cur_page);
+    int next_index = internal_page->GetLastIndexLE(key, comparator_);
+    next_page_id = internal_page->ValueAt(next_index);
     cur_guard = bpm_->FetchPageBasic(next_page_id);
     cur_page = cur_guard.As<BPlusTreePage>();
   }
