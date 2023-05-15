@@ -12,6 +12,9 @@ namespace conless {
 auto date_to_int(const std::string &date) -> int {
   int month = std::stoi(date.substr(0, 2));
   int day = std::stoi(date.substr(3, 2));
+  if (month < 6 || month > 8) {
+    return -1;
+  }
   if (month > 6) {
     day += 30;
   }
