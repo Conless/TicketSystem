@@ -137,9 +137,12 @@ class StringKey : public Key {
     return true;
   }
   friend auto operator!=(const StringKey<Length> &lhs, const StringKey<Length> &rhs) -> bool { return !(lhs == rhs); }
-  explicit operator std::string() const { return std::string(str_); }
+
   friend auto operator<<(std::ostream &os, const StringKey &rhs) -> std::ostream & { return (os << rhs.str_); }
   friend auto operator>>(std::istream &is, const StringKey &rhs) -> std::istream & { return (is >> rhs.str_); }
+
+  explicit operator std::string() const { return std::string(str_); }
+  friend auto to_string(const StringKey<Length> &x) -> std::string { return std::string(x.str_); } // NOLINT
 
  public:
   char str_[Length];
@@ -164,7 +167,8 @@ class PairKey : public Key {
 
  public:
   inline auto ToString() const -> std::string override {
-    return ("{" + static_cast<std::string>(first_) + "," + std::to_string(second_) + "}");
+    using std::to_string;
+    return ("{" + static_cast<std::string>(first_) + "," + to_string(second_) + "}");
   }
   friend auto operator==(const PairKey<T1, T2> &lhs, const PairKey<T1, T2> &rhs) -> bool { return lhs.first_ == rhs.first_ && lhs.second_ == rhs.second_; }
   friend auto operator<<(std::ostream &os, const PairKey<T1, T2> &rhs) -> std::ostream & {

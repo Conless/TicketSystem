@@ -41,7 +41,7 @@ namespace bustub {
   DISALLOW_COPY(cname);               \
   DISALLOW_MOVE(cname);
 
-#ifndef CUSTOMIZED_BUSTUB
+#ifdef CUSTOMIZED_BUSTUB
 
 #define BUSTUB_DECLARE(TypeName)                                                                                   \
   namespace bustub {                                                                                               \
@@ -73,11 +73,10 @@ namespace bustub {
   using namespace conless;                                                                            /* NOLINT */ \
   template class TypeName<StandardKey<int>, int, StandardKey<int>::Comparator>;                       /* NOLINT */ \
   template class TypeName<PairKey<StringKey<65>, int>, int, PairKey<StringKey<65>, int>::Comparator>; /* NOLINT */ \
-  template class TypeName<UserName, int, UserName::Comparator>;                                       /* NOLINT */ \
-  template class TypeName<TrainID, int, TrainID::Comparator>;                                         /* NOLINT*/  \
-  template class TypeName<TrainDateID, int, TrainDateID::Comparator>;                                 /* NOLINT*/  \
-  template class TypeName<TrainStationID, int, TrainStationID::Comparator>;                           /* NOLINT*/  \
-  template class TypeName<TicketID, int, TicketID::Comparator>;                                       /* NOLINT*/  \
+  template class TypeName<StringKey<20>, int, StringKey<20>::Comparator>;                             /* NOLINT */ \
+  template class TypeName<PairKey<StringKey<20>, int>, int, PairKey<StringKey<20>, int>::Comparator>; /* NOLINT*/  \
+  template class TypeName<PairKey<StringKey<30>, StringKey<20>>, int,                                 /* NOLINT*/  \
+                          PairKey<StringKey<30>, StringKey<20>>::Comparator>;                         /* NOLINT*/  \
   }  // namespace bustub
 
 #endif

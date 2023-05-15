@@ -5,7 +5,7 @@
 
 namespace conless {
 
-auto TimeStamp(int timestamp) -> std::string { return "[" + std::to_string(timestamp) + "] "; }
+auto TimeStamp(int timestamp) -> std::string;
 
 }
 
