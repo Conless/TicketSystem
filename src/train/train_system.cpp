@@ -77,7 +77,10 @@ auto TrainSystem::QueryTrain(const TrainID &train_id, const std::string &date) -
   if (!train_find_res.first) {
     return "-1";
   }
-  auto &train_info = train_find_res.second;
+  const auto &train_info = train_find_res.second;
+  if (!train_info.released_) {
+    return "-1";
+  }
   int date_num = date_to_int(date);
   if (date_num < train_info.start_date_ || date_num > train_info.end_date_) {
     return "-1";
@@ -220,7 +223,6 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
   if (dest_trains_station_info.empty()) {
     return "0";
   }
-
   vector<ArrivalInfo> stations_after_start[STATION_NUM_MAX];
   vector<TrainInfo> start_trains_info;
   GetStartTrainsInfo(start_trains_station_info, stations_after_start, start_trains_info, date);

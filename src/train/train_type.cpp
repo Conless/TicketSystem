@@ -65,7 +65,7 @@ auto time_to_int(const std::string &time) -> int {
  * @return std::string
  */
 auto time_to_string(int time) -> std::string {
-  int hour = time / 60;
+  int hour = (time / 60) % 24;
   int minute = time % 60;
   std::string res;
   if (hour >= 10) {
@@ -73,6 +73,7 @@ auto time_to_string(int time) -> std::string {
   } else {
     res += "0" + std::string{static_cast<char>('0' + hour)};
   }
+  res += ":";
   if (minute >= 10) {
     res += std::to_string(minute);
   } else {
@@ -111,7 +112,7 @@ auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info
     res += arr_time + " -> ";
     res += dep_time + " ";
     if (i != train_info.station_num_ - 1) {
-      res += std::to_string(train_date_info.remain_tickets_[i]) + "\n";
+      res += std::to_string(train_date_info.remain_tickets_[i]);
     } else {
       res += "x";
     }

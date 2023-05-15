@@ -176,13 +176,13 @@ void TicketSystem::QueryTrain(int timestamp, const std::string &train_id, const 
 void TicketSystem::QueryTicket(int timestamp, const std::string &start, const std::string &dest,
                                const std::string &date, const std::string &sort_tag) {
   std::cout << TimeStamp(timestamp)
-            << train_sys_.QueryTicket(date, StationID(start), StationID(dest), sort_tag == "cost" ? 1 : 0);
+            << train_sys_.QueryTicket(date, StationID(start), StationID(dest), sort_tag == "cost" ? 1 : 0) << '\n';
 }
 
 void TicketSystem::QueryTransfer(int timestamp, const std::string &start, const std::string &dest,
                                  const std::string &date, const std::string &sort_tag) {
   std::cout << TimeStamp(timestamp)
-            << train_sys_.QueryTransfer(date, StationID(start), StationID(dest), sort_tag == "cost" ? 1 : 0);
+            << train_sys_.QueryTransfer(date, StationID(start), StationID(dest), sort_tag == "cost" ? 1 : 0) << '\n';
 }
 
 }  // namespace conless

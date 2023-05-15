@@ -6,7 +6,7 @@ const std::string FILE_NAME = "ticket_system";
 
 auto main() -> int {
   std::ios::sync_with_stdio(false);
-  auto *root = new TicketSystem(FILE_NAME, true);
+  auto *root = new TicketSystem(FILE_NAME, false);
   std::string input;
   while (getline(std::cin, input)) {
     Parser input_msg(input);

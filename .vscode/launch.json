@@ -11,7 +11,6 @@
             "program": "${workspaceFolder}/build/code",
             "args": [
               "<${workspaceFolder}/build/test/1.in",
-              "<${workspaceFolder}/build/test/test.out",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",
