@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <iterator>
 
-#include "common/exception.h"
+#include "utils/exceptions.h"
 
 namespace conless {
 template <class T>
@@ -200,7 +200,7 @@ class list {  // NOLINT
 
   void erase(iterator pos) {  // NOLINT
     if (pos.iter_ != this) {
-      throw bustub::Exception(bustub::ExceptionType::INVALID, "pointing to another list");
+      throw Exception("pointing to another list");
     }
     pos.ptr_->prev_->next_ = pos.ptr_->next_;
     pos.ptr_->next_->prev_ = pos.ptr_->prev_;
