@@ -45,6 +45,12 @@ class TicketSystem {
   void QueryTransfer(int timestamp, const std::string &start, const std::string &dest, const std::string &date,
                      const std::string &sort_tag);
 
+  void BuyTicket(int timestamp, const std::string &user_name, const std::string &train_id, const std::string &date,
+                 const std::string &start, const std::string &dest, int quantity, const std::string &wait_tag);
+
+  void QueryOrder(int timestamp, const std::string &user_name);
+  
+
  private:
   const bool initialized_;
   UserSystem user_sys_;

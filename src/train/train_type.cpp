@@ -175,4 +175,33 @@ auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info
   train_ticket_info += std::to_string(remain_ticket);
   return train_ticket_info;
 }
+
+auto to_string(const TicketInfo &ticket_info) -> std::string {
+  std::string res;
+  if (ticket_info.status_ == 1) {
+    res = "[success] ";
+  } else if (ticket_info.status_ == 0) {
+    res = "[pending] ";
+  } else {
+    res = "[refunded] ";
+  }
+  res += std::string{ticket_info.train_id_} + " ";
+  res += std::string{ticket_info.start_} + " ";
+  res += date_to_string(ticket_info.date_ + ticket_info.start_time_ / TIME_MAX_IN_DAY) + " ";
+  res += time_to_string(ticket_info.start_time_) + " -> ";
+  res += std::string{ticket_info.dest_} + " ";
+  res += date_to_string(ticket_info.date_ + ticket_info.dest_time_ / TIME_MAX_IN_DAY) + " ";
+  res += time_to_string(ticket_info.dest_time_) + " ";
+  res += std::to_string(ticket_info.price_) + " " + std::to_string(ticket_info.quantity_);
+  return res;
+}
+
+auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int {
+  for (int i = 0; i < train_info.station_num_; i++) {
+    if (train_info.stations_id_[i] == station_id) {
+      return i;
+    }
+  }
+  return -1;
+}
 }  // namespace conless

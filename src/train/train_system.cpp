@@ -1,7 +1,9 @@
 #include "train/train_system.h"
 #include <algorithm>
 #include <climits>
+#include <string>
 #include "container/types.h"
+#include "ticket_system.h"
 #include "train/train_type.h"
 #include "utils/algorithm.h"
 
@@ -292,6 +294,64 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
     }
   }
   return result.second;
+}
+
+auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, const std::string &date, const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string {
+  auto train_find_res = train_info_db_.Find(train_id);
+  if (!train_find_res.first) {
+    return "-1";
+  }
+  const auto &train_info = train_find_res.second;
+  TicketInfo new_ticket{ticket_id, 0, train_id, start, -1, -1, dest, -1, -1, -1, quantity, -1};
+  new_ticket.start_index_ = get_station_index(train_info, start);
+  new_ticket.dest_index_ = get_station_index(train_info, dest);
+  if (new_ticket.start_index_ == -1 || new_ticket.dest_index_ == -1 ||
+      new_ticket.start_index_ >= new_ticket.dest_index_) {
+    return "-1";
+  }
+  new_ticket.start_time_ = train_info.dep_times_[new_ticket.start_index_];
+  new_ticket.dest_time_ = train_info.arr_times_[new_ticket.dest_index_];
+  new_ticket.date_ = date_to_int(date) - new_ticket.start_time_ / TIME_MAX_IN_DAY;
+  if (!train_info.released_ || new_ticket.date_ < train_info.start_date_ || new_ticket.date_ > train_info.end_date_) {
+    return "-1";
+  }
+  auto train_date_info_iter = train_date_info_db_.GetIterator({new_ticket.train_id_, new_ticket.date_});
+  if (train_date_info_iter.IsEnd()) {
+    return "-1";
+  }
+  auto &train_date_info = train_date_info_iter->second;
+  int min_remain_ticket = train_info.seat_num_;
+  int price_sum = 0;
+  for (int i = new_ticket.start_index_; i < new_ticket.dest_index_; i++) {
+    min_remain_ticket = std::min(min_remain_ticket, train_date_info.remain_tickets_[i]);
+    price_sum += train_info.prices_[i];
+  }
+  if (min_remain_ticket < quantity && !wait_tag) {
+    return "-1";
+  }
+  new_ticket.price_ = quantity * price_sum;
+  if (min_remain_ticket >= quantity) {
+    for (int i = new_ticket.start_index_; i < new_ticket.dest_index_; i++) {
+      train_date_info.remain_tickets_[i] -= quantity;
+    }
+    new_ticket.status_ = 1;
+    ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
+    return std::to_string(new_ticket.price_);
+  }
+  // The remain case is waitlisted
+  train_date_info.waitlist_[train_date_info.waitlist_length_++] = {new_ticket.ticket_id_, new_ticket.start_index_, new_ticket.dest_index_, new_ticket.quantity_};
+  ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
+  return "queue";
+}
+
+auto TrainSystem::QueryOrder(const UserName &username) -> std::string {
+  vector<TicketInfo> ticket_infos;
+  ticket_info_db_.Search({username, 0}, &ticket_infos, TicketID::Comparator(CompareFirst));
+  std::string query_res = std::to_string(ticket_infos.size());
+  for (const auto &ticket_info : ticket_infos) {
+    query_res += "\n" + to_string(ticket_info);
+  }
+  return query_res;
 }
 
 }  // namespace conless

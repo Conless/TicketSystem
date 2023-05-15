@@ -105,6 +105,14 @@ auto UserSystem::Initialized() const -> bool {
   return !user_info_db_.Empty();
 }
 
+auto UserSystem::CheckLogin(const UserName &username) -> bool {
+  auto user_find_res = user_info_db_.Find(username);
+  if (!user_find_res.first) {
+    return false;
+  }
+  return user_find_res.second.login_status_;
+}
+
 auto UserSystem::CheckLogin(const UserName &username, UserInfo &dest) -> bool {
   auto user_find_res = user_info_db_.Find(username);
   if (!user_find_res.first) {

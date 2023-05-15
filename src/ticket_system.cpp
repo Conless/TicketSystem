@@ -1,8 +1,11 @@
 #include "ticket_system.h"
 
 #include <filesystem>
+#include <string>
 
+#include "train/train_type.h"
 #include "utils/exceptions.h"
+#include "utils/utility.h"
 
 namespace conless {
 
@@ -68,53 +71,49 @@ void TicketSystem::AcceptMsg(const Parser &input_msg) {
     return;
   }
   if (input_msg.instruction_ == "query_ticket") {
-    QueryTicket(input_msg.timestamp_, input_msg.GetString('s'), input_msg.GetString('t'), input_msg.GetString('d'), input_msg.GetString('p'));
+    QueryTicket(input_msg.timestamp_, input_msg.GetString('s'), input_msg.GetString('t'), input_msg.GetString('d'),
+                input_msg.GetString('p'));
     return;
   }
   if (input_msg.instruction_ == "query_transfer") {
-    QueryTransfer(input_msg.timestamp_, input_msg.GetString('s'), input_msg.GetString('t'), input_msg.GetString('d'), input_msg.GetString('p'));
+    QueryTransfer(input_msg.timestamp_, input_msg.GetString('s'), input_msg.GetString('t'), input_msg.GetString('d'),
+                  input_msg.GetString('p'));
     return;
   }
+  // TODO(Conless): add other if branches
 }
 
 void TicketSystem::AddUser(int timestamp, const std::string &cur_username, const std::string &username,
                            const std::string &passwd, const std::string &name, const std::string &mail_addr, int priv) {
   if (!user_sys_.Initialized()) {
     user_sys_.Init(UserName(username), UserPassword(passwd), UserNickname(name), UserEmail(mail_addr));
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
     return;
   }
   bool add_res = user_sys_.AddUser(UserName(cur_username), UserName(username), UserPassword(passwd), UserNickname(name),
                                    UserEmail(mail_addr), priv);
   if (!add_res) {
-    std::cout << TimeStamp(timestamp)
-              << "-1\n";
+    std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
   }
 }
 
 void TicketSystem::Login(int timestamp, const std::string &username, const std::string &passwd) {
   bool login_res = user_sys_.Login(UserName(username), UserPassword(passwd));
   if (!login_res) {
-    std::cout << TimeStamp(timestamp)
-              << "-1\n";
+    std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
   }
 }
 
 void TicketSystem::Logout(int timestamp, const std::string &username) {
   bool logout_res = user_sys_.Logout(UserName(username));
   if (!logout_res) {
-    std::cout << TimeStamp(timestamp)
-              << "-1\n";
+    std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
   }
 }
 
@@ -139,33 +138,27 @@ void TicketSystem::AddTrain(int timestamp, const std::string &train_id, int stat
   bool add_res = train_sys_.AddTrain(TrainID(train_id), station_num, seat_num, stations, prices, start_time,
                                      travel_times, stopover_times, sale_date, type);
   if (!add_res) {
-    std::cout << TimeStamp(timestamp)
-              << "-1\n";
+    std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
   }
 }
 
 void TicketSystem::DeleteTrain(int timestamp, const std::string &train_id) {
   bool del_res = train_sys_.DeleteTrain(TrainID(train_id));
   if (!del_res) {
-    std::cout << TimeStamp(timestamp)
-              << "-1\n";
+    std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
   }
 }
 
 void TicketSystem::ReleaseTrain(int timestamp, const std::string &train_id) {
   bool rel_res = train_sys_.ReleaseTrain(TrainID(train_id));
   if (!rel_res) {
-    std::cout << TimeStamp(timestamp)
-              << "-1\n";
+    std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
-    std::cout << TimeStamp(timestamp)
-              << "0\n";
+    std::cout << TimeStamp(timestamp) << "0\n";
   }
 }
 
@@ -183,6 +176,30 @@ void TicketSystem::QueryTransfer(int timestamp, const std::string &start, const 
                                  const std::string &date, const std::string &sort_tag) {
   std::cout << TimeStamp(timestamp)
             << train_sys_.QueryTransfer(date, StationID(start), StationID(dest), sort_tag == "cost" ? 1 : 0) << '\n';
+}
+
+void TicketSystem::BuyTicket(int timestamp, const std::string &user_name, const std::string &train_id,
+                             const std::string &date, const std::string &start, const std::string &dest, int quantity,
+                             const std::string &wait_tag) {
+  TicketID new_ticket_id{UserName(user_name), user_sys_.BuyNewTicket(UserName(user_name))};
+  if (new_ticket_id.second_ == -1) {
+    user_sys_.BuyNewTicketFailed(new_ticket_id.first_);
+    std::cout << TimeStamp(timestamp) << "-1\n";
+    return;
+  }
+  std::string buy_res = train_sys_.BuyTicket(new_ticket_id, TrainID(train_id), date, StationID(start), StationID(dest), quantity, wait_tag == "true");
+  if (buy_res == "-1") {
+    user_sys_.BuyNewTicketFailed(new_ticket_id.first_);
+  }
+  std::cout << TimeStamp(timestamp) << buy_res << '\n';
+}
+
+void TicketSystem::QueryOrder(int timestamp, const std::string &user_name) {
+  if (!user_sys_.CheckLogin(UserName(user_name))) {
+    std::cout << TimeStamp(timestamp) << "-1\n";
+    return;
+  }
+  std::cout << TimeStamp(timestamp) << train_sys_.QueryOrder(UserName(user_name)) << '\n';
 }
 
 }  // namespace conless

@@ -36,28 +36,44 @@ struct TrainInfo {
                                     // one
 };
 
-struct TrainDateInfo {  // 5248 bytes
+struct TicketInfo {
+  TicketID ticket_id_;
+  int status_;  // 1 for success, 0 for still waiting, -1 for refunded
+  TrainID train_id_;
+
+  StationID start_;
+  int start_index_;
+  int start_time_;
+
+  StationID dest_;
+  int dest_index_;
+  int dest_time_;
+
+  int date_; // date of its origin station
+  int quantity_;
+  int price_;
+};
+
+struct TicketWaitInfo {
+  TicketID ticket_id_;
+  int start_index_;
+  int dest_index_;
+  int quantity_;
+};
+
+struct TrainDateInfo {  // 6848 bytes
   TrainID train_id_;
   int date_;
   int remain_tickets_[STATION_NUM_MAX];  // the remain ticket from the i-th station to the i+1-th, 0-base from the first
 
-  TicketID waitlist_[WAITLIST_LENGTH];
-  int head_{0}, tail_{-1};
+  TicketWaitInfo waitlist_[WAITLIST_LENGTH];
+  int waitlist_length_{0};
 };
 
 struct TrainStationInfo {  // 80 bytes
   TrainID train_id_;
   StationID stations_id_;
   int index_in_train_;
-};
-
-struct TicketInfo {
-  TicketID ticket_id_;
-  bool status_;  // false for still waiting
-  TrainID train_id_;
-  int date_;
-  int quantity_;
-  int price_;
 };
 
 struct ArrivalInfo {
@@ -84,6 +100,10 @@ auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info
 auto to_string(const TrainInfo &train_info, int date) -> std::string;                                         // NOLINT
 auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info, int date, int start_index,  // NOLINT
                int dest_index) -> std::string;
+auto to_string(const TicketInfo &ticket_info) -> std::string; // NOLINT
+
+// Get the station index in train_info
+auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int; // NOLINT
 
 }  // namespace conless
 

@@ -34,6 +34,8 @@ class UserSystem {
 
   auto Initialized() const -> bool;
 
+  auto CheckLogin(const UserName &username) -> bool;
+
   auto CheckLogin(const UserName &username, UserInfo &dest) -> bool;
 
  private:

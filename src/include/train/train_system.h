@@ -29,7 +29,7 @@ class TrainSystem {
 
   auto QueryTransfer(const std::string &date_str, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
 
-  auto BuyTicket(const TicketInfo &ticket, bool wait_tag) -> std::string;
+  auto BuyTicket(const TicketID &ticket_id, const TrainID &train_id, const std::string &date_str, const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string;
 
   auto QueryOrder(const UserName &username) -> std::string;
 
