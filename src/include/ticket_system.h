@@ -49,6 +49,8 @@ class TicketSystem {
                  const std::string &start, const std::string &dest, int quantity, const std::string &wait_tag);
 
   void QueryOrder(int timestamp, const std::string &user_name);
+
+  void RefundTicket(int timestamp, const std::string &user_name, int order_num);
   
 
  private:

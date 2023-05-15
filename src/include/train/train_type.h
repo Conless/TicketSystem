@@ -22,7 +22,6 @@ struct TrainInfo {
   int seat_num_;
   int station_num_;
 
-  int start_time_;
   int start_date_;
   int end_date_;
   char type_;

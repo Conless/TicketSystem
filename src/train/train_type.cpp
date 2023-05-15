@@ -93,13 +93,14 @@ auto time_to_string(int time) -> std::string {
  * @return std::string
  */
 auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info) -> std::string {
-  std::string res = std::string{train_info.train_id_} + " " + train_info.type_ + "\n";
+  std::string res = std::string{train_info.train_id_} + " " + train_info.type_;
   for (int i = 0; i < train_info.station_num_; i++) {
+    res += "\n";
     std::string arr_time;
     if (i == 0) {
       arr_time = "xx-xx xx:xx";
     } else {
-      int arr_min = train_info.start_time_ + train_info.arr_times_[i];
+      int arr_min = train_info.arr_times_[i];
       int arr_date = train_date_info.date_ + arr_min / TIME_MAX_IN_DAY;
       arr_time = date_to_string(arr_date) + " " + time_to_string(arr_min % TIME_MAX_IN_DAY);
     }
@@ -107,30 +108,31 @@ auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info
     if (i == train_info.station_num_ - 1) {
       dep_time = "xx-xx xx:xx";
     } else {
-      int dep_min = train_info.start_time_ + train_info.dep_times_[i];
+      int dep_min = train_info.dep_times_[i];
       int dep_date = train_date_info.date_ + dep_min / TIME_MAX_IN_DAY;
-      arr_time = date_to_string(dep_date) + " " + time_to_string(dep_min % TIME_MAX_IN_DAY);
+      dep_time = date_to_string(dep_date) + " " + time_to_string(dep_min % TIME_MAX_IN_DAY);
     }
     res += std::string{train_info.stations_id_[i]} + " ";
     res += arr_time + " -> ";
     res += dep_time + " ";
+    res += std::to_string(train_info.prices_[i]) + " ";
     if (i != train_info.station_num_ - 1) {
       res += std::to_string(train_date_info.remain_tickets_[i]);
     } else {
       res += "x";
     }
-    res += "\n";
   }
   return res;
 }
 auto to_string(const TrainInfo &train_info, int date) -> std::string {
-  std::string res = std::string{train_info.train_id_} + " " + train_info.type_ + "\n";
+  std::string res = std::string{train_info.train_id_} + " " + train_info.type_;
   for (int i = 0; i < train_info.station_num_; i++) {
+    res += "\n";
     std::string arr_time;
     if (i == 0) {
       arr_time = "xx-xx xx:xx";
     } else {
-      int arr_min = train_info.start_time_ + train_info.arr_times_[i];
+      int arr_min = train_info.arr_times_[i];
       int arr_date = date + arr_min / TIME_MAX_IN_DAY;
       arr_time = date_to_string(arr_date) + " " + time_to_string(arr_min % TIME_MAX_IN_DAY);
     }
@@ -138,19 +140,19 @@ auto to_string(const TrainInfo &train_info, int date) -> std::string {
     if (i == train_info.station_num_ - 1) {
       dep_time = "xx-xx xx:xx";
     } else {
-      int dep_min = train_info.start_time_ + train_info.dep_times_[i];
+      int dep_min = train_info.dep_times_[i];
       int dep_date = date + dep_min / TIME_MAX_IN_DAY;
       arr_time = date_to_string(dep_date) + " " + time_to_string(dep_min % TIME_MAX_IN_DAY);
     }
     res += std::string{train_info.stations_id_[i]} + " ";
     res += arr_time + " -> ";
     res += dep_time + " ";
+    res += std::to_string(train_info.prices_[i]) + " ";
     if (i != train_info.station_num_ - 1) {
       res += std::to_string(train_info.seat_num_) + "\n";
     } else {
       res += "x";
     }
-    res += "\n";
   }
   return res;
 }

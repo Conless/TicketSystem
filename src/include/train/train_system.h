@@ -15,7 +15,7 @@ class TrainSystem {
 
  public:
   auto AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
-                const vector<std::string> &prices, const std::string &start_time,
+                const vector<std::string> &prices, const std::string &start_time_str,
                 const vector<std::string> &travel_times, const vector<std::string> &stopover_times,
                 const vector<std::string> &sale_date, char type) -> bool;
 
@@ -33,15 +33,16 @@ class TrainSystem {
 
   auto QueryOrder(const UserName &username) -> std::string;
 
-  auto RefundTicket(const UserName &username, int order_num);
+  auto RefundTicket(const UserName &username, int order_num) -> bool;
 
  protected:
   void GetStartTrainsInfo(const vector<TrainStationInfo> &start_trains_station_info,
                           vector<ArrivalInfo> *stations_after_start, vector<TrainInfo> &start_trains_info, int date);
   void GetDestTrainsInfo(const vector<TrainStationInfo> &dest_trains_station_info,
                          vector<DepartureInfo> *stations_before_dest, vector<TrainInfo> &dest_trains_info, int date);
-  auto GetEarliestDate(const TrainInfo &train_info, int station_index, int arr_date, int arr_time)
-    -> int;
+  auto GetEarliestDate(const TrainInfo &train_info, int station_index, int arr_date, int arr_time) -> int;
+
+  auto BuySelectedTicket(const TicketWaitInfo &new_ticket, TrainDateInfo &train_date_info) -> bool;
 
  private:
   BPlusTreeIndex<TrainID, TrainInfo> train_info_db_;

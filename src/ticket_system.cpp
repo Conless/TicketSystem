@@ -80,7 +80,19 @@ void TicketSystem::AcceptMsg(const Parser &input_msg) {
                   input_msg.GetString('p'));
     return;
   }
-  // TODO(Conless): add other if branches
+  if (input_msg.instruction_ == "buy_ticket") {
+    BuyTicket(input_msg.timestamp_, input_msg.GetString('u'), input_msg.GetString('i'), input_msg.GetString('d'),
+              input_msg.GetString('f'), input_msg.GetString('t'), input_msg.GetInt('n'), input_msg.GetString('q'));
+    return;
+  }
+  if (input_msg.instruction_ == "query_order") {
+    QueryOrder(input_msg.timestamp_, input_msg.GetString('u'));
+    return;
+  }
+  if (input_msg.instruction_ == "refund_ticket") {
+    RefundTicket(input_msg.timestamp_, input_msg.GetString('u'), input_msg.GetInt('n'));
+    return;
+  }
 }
 
 void TicketSystem::AddUser(int timestamp, const std::string &cur_username, const std::string &username,
@@ -145,8 +157,8 @@ void TicketSystem::AddTrain(int timestamp, const std::string &train_id, int stat
 }
 
 void TicketSystem::DeleteTrain(int timestamp, const std::string &train_id) {
-  bool del_res = train_sys_.DeleteTrain(TrainID(train_id));
-  if (!del_res) {
+  bool delete_res = train_sys_.DeleteTrain(TrainID(train_id));
+  if (!delete_res) {
     std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
     std::cout << TimeStamp(timestamp) << "0\n";
@@ -154,8 +166,8 @@ void TicketSystem::DeleteTrain(int timestamp, const std::string &train_id) {
 }
 
 void TicketSystem::ReleaseTrain(int timestamp, const std::string &train_id) {
-  bool rel_res = train_sys_.ReleaseTrain(TrainID(train_id));
-  if (!rel_res) {
+  bool release_res = train_sys_.ReleaseTrain(TrainID(train_id));
+  if (!release_res) {
     std::cout << TimeStamp(timestamp) << "-1\n";
   } else {
     std::cout << TimeStamp(timestamp) << "0\n";
@@ -200,6 +212,19 @@ void TicketSystem::QueryOrder(int timestamp, const std::string &user_name) {
     return;
   }
   std::cout << TimeStamp(timestamp) << train_sys_.QueryOrder(UserName(user_name)) << '\n';
+}
+
+void TicketSystem::RefundTicket(int timestamp, const std::string &user_name, int order_num) {
+  if (!user_sys_.CheckLogin(UserName(user_name))) {
+    std::cout << TimeStamp(timestamp) << "-1\n";
+    return;
+  }
+  bool refund_res = train_sys_.RefundTicket(UserName(user_name), order_num == -1 ? 1 : order_num);
+  if (!refund_res) {
+    std::cout << TimeStamp(timestamp) << "-1\n";
+  } else {
+    std::cout << TimeStamp(timestamp) << "0\n";
+  }
 }
 
 }  // namespace conless
