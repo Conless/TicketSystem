@@ -22,6 +22,8 @@ class UserSystem {
   auto Login(const UserName &username, const UserPassword &passwd) -> bool;
 
   auto Logout(const UserName &username) -> bool;
+  
+  void LogoutAll();
 
   auto QueryProfile(const UserName &cur_username, const UserName &username) -> std::string;
 
@@ -37,7 +39,6 @@ class UserSystem {
   auto CheckLogin(const UserName &username) -> bool;
 
   auto CheckLogin(const UserName &username, UserInfo &dest) -> bool;
-
  private:
   BPlusTreeIndex<UserName, UserInfo> user_info_db_;
 };

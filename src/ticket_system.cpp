@@ -95,6 +95,10 @@ void TicketSystem::AcceptMsg(const Parser &input_msg) {
   }
 }
 
+void TicketSystem::Exit() {
+  user_sys_.LogoutAll();
+}
+
 void TicketSystem::AddUser(int timestamp, const std::string &cur_username, const std::string &username,
                            const std::string &passwd, const std::string &name, const std::string &mail_addr, int priv) {
   if (!user_sys_.Initialized()) {
@@ -199,7 +203,8 @@ void TicketSystem::BuyTicket(int timestamp, const std::string &user_name, const 
     std::cout << TimeStamp(timestamp) << "-1\n";
     return;
   }
-  std::string buy_res = train_sys_.BuyTicket(new_ticket_id, TrainID(train_id), date, StationID(start), StationID(dest), quantity, wait_tag == "true");
+  std::string buy_res = train_sys_.BuyTicket(new_ticket_id, TrainID(train_id), date, StationID(start), StationID(dest),
+                                             quantity, wait_tag == "true");
   if (buy_res == "-1") {
     user_sys_.BuyNewTicketFailed(new_ticket_id.first_);
   }

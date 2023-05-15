@@ -15,6 +15,8 @@ class TicketSystem {
 
   void AcceptMsg(const Parser &input_msg);
 
+  void Exit();
+
   //  private:
   void AddUser(int timestamp, const std::string &cur_username, const std::string &username, const std::string &passwd,
                const std::string &name, const std::string &mail_addr, int priv);

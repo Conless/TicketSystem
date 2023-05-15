@@ -47,6 +47,12 @@ auto UserSystem::Logout(const UserName &username) -> bool {
   return true;
 }
 
+void UserSystem::LogoutAll() {
+  for (auto it = user_info_db_.GetBeginIterator(); it != user_info_db_.GetEndIterator(); ++it) {
+    it->second.login_status_ = false;
+  }
+}
+
 auto UserSystem::QueryProfile(const UserName &cur_username, const UserName &username) -> std::string {
   UserInfo cur_user_info;
   if (!CheckLogin(cur_username, cur_user_info)) {

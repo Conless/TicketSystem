@@ -12,6 +12,7 @@ auto main() -> int {
     Parser input_msg(input);
     if (input_msg.instruction_ == "exit") {
       std::cout << TimeStamp(input_msg.timestamp_) << "bye\n";
+      root->Exit();
       break;
     }
     if (input_msg.instruction_ == "clean") {
