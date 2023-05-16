@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
-#include "array.h"
+#include "container/array.h"
 
 using namespace std; // NOLINT
 using namespace conless; // NOLINT
 
 auto main() -> int {
-  Array<int> arr("data.db");
+  Array<int> arr("data");
   int t;
   cin >> t;
   for (int i = 0; i < t; i++) {

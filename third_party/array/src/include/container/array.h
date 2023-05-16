@@ -8,7 +8,7 @@ class Array {
   explicit Array(const std::string &file_name, bool inherit_file = true);
   ~Array();
 
-  void Insert(const T &value);  // NOLINT
+  auto Insert(const T &value) -> int;  // NOLINT
   auto ValueAt(int index) -> T;       // NOLINT
   void SetValueAt(int index, const T &value);
 

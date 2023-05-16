@@ -8,6 +8,6 @@ project(Array)
 
 set(CMAKE_CXX_FLAGS "-g -Ofast")
 
-include_directories(${PROJECT_SOURCE_DIR}/src/include)
+include_directories(${PROJECT_SOURCE_DIR}/src/include ${PROJECT_SOURCE_DIR}/../bustub/src/include ${PROJECT_SOURCE_DIR}/../../src/include)
 
-add_executable(code src/main.cpp src/array.cpp)
+add_executable(code src/main.cpp src/container/array.cpp)
