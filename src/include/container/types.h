@@ -145,7 +145,7 @@ class StringKey : public Key {
   friend auto to_string(const StringKey<Length> &x) -> std::string { return std::string(x.str_); } // NOLINT
 
  public:
-  char str_[Length];
+  char str_[Length + 1];
 };
 
 enum ComparatorType { CompareFirst, CompareBoth };
