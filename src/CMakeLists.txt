@@ -18,4 +18,4 @@ set(UTILS_SOURCE_CPPS
 add_library(ticket_system ${USER_SOURCE_CPPS} ${TRAIN_SOURCE_CPPS} ${UTILS_SOURCE_CPPS} ticket_system.cpp)
 
 target_link_libraries(ticket_system bustub)
-target_include_directories(ticket_system PUBLIC ${BUSTUB_INCLUDE_DIR} ${TICKET_SYSTEM_INCLUDE_DIR})
+target_link_libraries(ticket_system array)
