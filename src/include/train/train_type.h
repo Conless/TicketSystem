@@ -10,10 +10,10 @@ using TrainID = StringKey<20>;
 using StationID = StringKey<30>;
 using TrainDateID = PairKey<TrainID, int>;
 using TrainStationID = PairKey<StationID, TrainID>;
-using TicketUserInfo = PairKey<UserName, int>;
+using TicketID = PairKey<UserName, int>;
 
 constexpr int STATION_NUM_MAX = 100;
-constexpr int WAITLIST_LENGTH = 400;
+constexpr int WAITLIST_LENGTH = 200;
 
 constexpr int TIME_MAX_IN_DAY = 24 * 60;
 
@@ -36,7 +36,7 @@ struct TrainInfo {
 };
 
 struct TicketInfo {
-  TicketUserInfo ticket_user_info_;
+  TicketID ticket_id_;
   int status_;  // 1 for success, 0 for still waiting, -1 for refunded
   TrainID train_id_;
 
@@ -51,11 +51,10 @@ struct TicketInfo {
   int date_;  // date of its origin station
   int quantity_;
   int price_;
-  int ticket_id_;
 };
 
 struct TicketWaitInfo {
-  int ticket_id_;
+  TicketID ticket_id_;
   int start_index_;
   int dest_index_;
   int quantity_;

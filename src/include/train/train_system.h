@@ -30,7 +30,7 @@ class TrainSystem {
 
   auto QueryTransfer(const std::string &date_str, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
 
-  auto BuyTicket(const TicketUserInfo &ticket_id, const TrainID &train_id, const std::string &date_str, const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string;
+  auto BuyTicket(const TicketID &ticket_id, const TrainID &train_id, const std::string &date_str, const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string;
 
   auto QueryOrder(const UserName &username) -> std::string;
 
@@ -49,8 +49,8 @@ class TrainSystem {
   BPlusTreeIndex<TrainID, TrainInfo> train_info_db_;
   BPlusTreeIndex<TrainDateID, TrainDateInfo> train_date_info_db_;
   BPlusTreeIndex<TrainStationID, TrainStationInfo> train_station_info_db_;
-  BPlusTreeIndex<TicketUserInfo, TicketInfo> ticket_info_db_;
-  Array<TicketUserInfo> ticket_user_info_db_;
+  BPlusTreeIndex<TicketID, TicketInfo> ticket_info_db_;
+  // Array<TicketID> ticket_id_db_;
 };
 
 }  // namespace conless
