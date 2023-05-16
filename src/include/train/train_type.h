@@ -10,10 +10,10 @@ using TrainID = StringKey<20>;
 using StationID = StringKey<30>;
 using TrainDateID = PairKey<TrainID, int>;
 using TrainStationID = PairKey<StationID, TrainID>;
-using TicketID = PairKey<UserName, int>;
+using TicketUserInfo = PairKey<UserName, int>;
 
 constexpr int STATION_NUM_MAX = 100;
-constexpr int WAITLIST_LENGTH = 100;
+constexpr int WAITLIST_LENGTH = 400;
 
 constexpr int TIME_MAX_IN_DAY = 24 * 60;
 
@@ -36,7 +36,7 @@ struct TrainInfo {
 };
 
 struct TicketInfo {
-  TicketID ticket_id_;
+  TicketUserInfo ticket_user_info_;
   int status_;  // 1 for success, 0 for still waiting, -1 for refunded
   TrainID train_id_;
 
@@ -48,19 +48,20 @@ struct TicketInfo {
   int dest_index_;
   int dest_time_;
 
-  int date_; // date of its origin station
+  int date_;  // date of its origin station
   int quantity_;
   int price_;
+  int ticket_id_;
 };
 
 struct TicketWaitInfo {
-  TicketID ticket_id_;
+  int ticket_id_;
   int start_index_;
   int dest_index_;
   int quantity_;
 };
 
-struct TrainDateInfo {  // 6848 bytes
+struct TrainDateInfo {  // 4440 bytes
   TrainID train_id_;
   int date_;
   int remain_tickets_[STATION_NUM_MAX];  // the remain ticket from the i-th station to the i+1-th, 0-base from the first
@@ -99,10 +100,10 @@ auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info
 auto to_string(const TrainInfo &train_info, int date) -> std::string;                                         // NOLINT
 auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info, int date, int start_index,  // NOLINT
                int dest_index) -> std::string;
-auto to_string(const TicketInfo &ticket_info) -> std::string; // NOLINT
+auto to_string(const TicketInfo &ticket_info) -> std::string;  // NOLINT
 
 // Get the station index in train_info
-auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int; // NOLINT
+auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int;  // NOLINT
 
 }  // namespace conless
 

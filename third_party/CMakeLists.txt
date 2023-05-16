@@ -15,11 +15,16 @@ set(BUSTUB_SOURCE_CPPS
     bustub/src/storage/index/b_plus_tree_index.cpp
 )
 
-add_executable(example bustub/src/main.cpp)
+add_executable(example_bustub bustub/src/main.cpp)
 
 add_library(bustub ${BUSTUB_SOURCE_CPPS})
 
-target_include_directories(bustub PUBLIC ${BUSTUB_INCLUDE_DIR} ${BUSTUB_TEST_INCLUDE_DIR} ${BUSTUB_THIRD_PARTY_INCLUDE_DIR} ${TICKET_SYSTEM_INCLUDE_DIR})
+set(ARRAY_SOURCE_CPPS
+    array/src/container/array.cpp
+)
 
-target_include_directories(example PUBLIC ${BUSTUB_INCLUDE_DIR} ${BUSTUB_TEST_INCLUDE_DIR} ${BUSTUB_THIRD_PARTY_INCLUDE_DIR} ${TICKET_SYSTEM_INCLUDE_DIR})
-target_link_libraries(example bustub)
+add_executable(example_array array/src/main.cpp)
+
+add_library(array ${ARRAY_SOURCE_CPPS})
+
+target_link_libraries(example_array array)

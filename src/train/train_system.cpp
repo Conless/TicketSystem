@@ -14,7 +14,8 @@ TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
     : train_info_db_(file_name + "_train_info"),
       train_date_info_db_(file_name + "_train_date_info"),
       train_station_info_db_(file_name + "_train_station_info"),
-      ticket_info_db_(file_name + "_ticket_info") {}
+      ticket_info_db_(file_name + "_ticket_info"),
+      ticket_user_info_db_(file_name + "_ticket_user_info") {}
 
 auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
                            const vector<std::string> &prices, const std::string &start_time_str,
@@ -154,12 +155,13 @@ auto TrainSystem::QueryTicket(const std::string &date_str, const StationID &star
 }
 
 void TrainSystem::GetStartTrainsInfo(const vector<TrainStationInfo> &start_trains_station_info,
-                                     vector<ArrivalInfo> *stations_after_start, vector<TrainInfo> &start_trains_info,
-                                     int date) {
+                                     vector<vector<ArrivalInfo>> &stations_after_start,
+                                     vector<TrainInfo> &start_trains_info, int date) {
   start_trains_info.reserve(start_trains_station_info.size());
   for (int i = 0; i < start_trains_station_info.size(); i++) {
     const auto &start_train_station_info = start_trains_station_info[i];
     start_trains_info.push_back(train_info_db_.Find(start_train_station_info.train_id_).second);
+    stations_after_start.push_back(vector<ArrivalInfo>());
     const auto &start_train_info = start_trains_info[i];
     int start_index = start_train_station_info.index_in_train_;
 
@@ -172,7 +174,7 @@ void TrainSystem::GetStartTrainsInfo(const vector<TrainStationInfo> &start_train
     for (int j = start_index + 1; j < start_train_info.station_num_; j++) {
       int arr_time = start_train_info.arr_times_[j];
       stations_after_start[i].push_back(
-          {start_train_info.stations_id_[j], j, date + arr_time / TIME_MAX_IN_DAY, arr_time % TIME_MAX_IN_DAY});
+          {start_train_info.stations_id_[j], j, start_date + arr_time / TIME_MAX_IN_DAY, arr_time % TIME_MAX_IN_DAY});
     }
     sort(stations_after_start[i].begin(), stations_after_start[i].end(),
          [](const auto &a, const auto &b) { return a.station_id_ < b.station_id_; });
@@ -180,12 +182,13 @@ void TrainSystem::GetStartTrainsInfo(const vector<TrainStationInfo> &start_train
 }
 
 void TrainSystem::GetDestTrainsInfo(const vector<TrainStationInfo> &dest_trains_station_info,
-                                    vector<DepartureInfo> *stations_before_dest, vector<TrainInfo> &dest_trains_info,
-                                    int date) {
+                                    vector<vector<DepartureInfo>> &stations_before_dest,
+                                    vector<TrainInfo> &dest_trains_info, int date) {
   dest_trains_info.reserve(dest_trains_station_info.size());
   for (int i = 0; i < dest_trains_station_info.size(); i++) {
     const auto &dest_train_station_info = dest_trains_station_info[i];
     dest_trains_info.push_back(train_info_db_.Find(dest_train_station_info.train_id_).second);
+    stations_before_dest.push_back(vector<DepartureInfo>());
     const auto &dest_train_info = dest_trains_info[i];
     int dest_index = dest_train_station_info.index_in_train_;
 
@@ -230,11 +233,13 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
   if (dest_trains_station_info.empty()) {
     return "0";
   }
-  vector<ArrivalInfo> stations_after_start[STATION_NUM_MAX];
+  vector<vector<ArrivalInfo>> stations_after_start;
+  stations_after_start.reserve(start_trains_station_info.size());
   vector<TrainInfo> start_trains_info;
   GetStartTrainsInfo(start_trains_station_info, stations_after_start, start_trains_info, date);
 
-  vector<DepartureInfo> stations_before_dest[STATION_NUM_MAX];
+  vector<vector<DepartureInfo>> stations_before_dest;
+  stations_before_dest.reserve(dest_trains_station_info.size());
   vector<TrainInfo> dest_trains_info;
   GetDestTrainsInfo(dest_trains_station_info, stations_before_dest, dest_trains_info, date);
 
@@ -258,6 +263,10 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
       }
       const auto &dest_train_info = dest_trains_info[j];
       const auto &dest_train_station_info = dest_trains_station_info[j];
+
+      if (dest_train_info.train_id_ == start_train_info.train_id_) {
+        continue;
+      }
 
       for (int k = 0, l = 0; k < stations_after_start[i].size() && l < stations_before_dest[j].size();) {
         const auto &start_arr_info = stations_after_start[i][k];
@@ -314,7 +323,7 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
   return result.second;
 }
 
-auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, const std::string &date,
+auto TrainSystem::BuyTicket(const TicketUserInfo &ticket_id, const TrainID &train_id, const std::string &date,
                             const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string {
   auto train_find_res = train_info_db_.Find(train_id);
   if (!train_find_res.first) {
@@ -339,6 +348,7 @@ auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, 
     throw Exception("Iterator error.");
   }
   new_ticket.price_ = train_info.prices_[new_ticket.dest_index_] - train_info.prices_[new_ticket.start_index_];
+  new_ticket.ticket_id_ = ticket_user_info_db_.Insert(new_ticket.ticket_user_info_);
   auto &train_date_info = train_date_info_iter->second;
   TicketWaitInfo new_ticket_wait = {new_ticket.ticket_id_, new_ticket.start_index_, new_ticket.dest_index_,
                                     new_ticket.quantity_};
@@ -348,14 +358,17 @@ auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, 
   }
   if (buy_res) {
     new_ticket.status_ = 1;
-    ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
+    ticket_info_db_.Insert(new_ticket.ticket_user_info_, new_ticket);
     return std::to_string(new_ticket.price_ * new_ticket.quantity_);
   }
   // The remain case is waitlisted
-  ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
+  ticket_info_db_.Insert(new_ticket.ticket_user_info_, new_ticket);
+  if (train_date_info.waitlist_length_ == WAITLIST_LENGTH - 1) {
+    throw Exception("Waiting list not long enough.");
+  }
   train_date_info.waitlist_[train_date_info.waitlist_length_++] = {new_ticket.ticket_id_, new_ticket.start_index_,
                                                                    new_ticket.dest_index_, new_ticket.quantity_};
-  ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
+  ticket_info_db_.Insert(new_ticket.ticket_user_info_, new_ticket);
   return "queue";
 }
 
@@ -375,7 +388,7 @@ auto TrainSystem::BuySelectedTicket(const TicketWaitInfo &new_ticket, TrainDateI
 
 auto TrainSystem::QueryOrder(const UserName &username) -> std::string {
   vector<TicketInfo> ticket_infos;
-  ticket_info_db_.Search({username, 0}, &ticket_infos, TicketID::Comparator(CompareFirst));
+  ticket_info_db_.Search({username, 0}, &ticket_infos, TicketUserInfo::Comparator(CompareFirst));
   std::string query_res = std::to_string(ticket_infos.size());
   for (int i = ticket_infos.size() - 1; i >= 0; i--) {
     query_res += "\n" + to_string(ticket_infos[i]);
@@ -385,11 +398,12 @@ auto TrainSystem::QueryOrder(const UserName &username) -> std::string {
 
 auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool {
   vector<TicketInfo> ticket_infos;
-  ticket_info_db_.Search({username, 0}, &ticket_infos, TicketID::Comparator(CompareFirst));
+  ticket_info_db_.Search({username, 0}, &ticket_infos, TicketUserInfo::Comparator(CompareFirst));
   if (ticket_infos.size() < order_num) {
     return false;
   }
-  auto target_ticket_iter = ticket_info_db_.GetIterator(ticket_infos[ticket_infos.size() - order_num].ticket_id_);
+  auto target_ticket_iter =
+      ticket_info_db_.GetIterator(ticket_infos[ticket_infos.size() - order_num].ticket_user_info_);
   if (target_ticket_iter.IsEnd()) {
     throw Exception("Iterator error.");
   }
@@ -405,7 +419,8 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
     }
     for (int i = 0; i < train_date_info.waitlist_length_; i++) {
       if (BuySelectedTicket(train_date_info.waitlist_[i], train_date_info)) {
-        auto new_ticket_iter = ticket_info_db_.GetIterator(train_date_info.waitlist_[i].ticket_id_);
+        auto new_ticket_user_info = ticket_user_info_db_.ValueAt(train_date_info.waitlist_[i].ticket_id_);
+        auto new_ticket_iter = ticket_info_db_.GetIterator(new_ticket_user_info);
         if (new_ticket_iter.IsEnd()) {
           throw Exception("Iterator error.");
         }

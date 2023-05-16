@@ -1,6 +1,7 @@
 #ifndef TRAIN_SYSTEM_H
 #define TRAIN_SYSTEM_H
 
+#include "container/array.h"
 #include "storage/index/b_plus_tree_index_nts.h"
 #include "train/train_type.h"
 
@@ -29,7 +30,7 @@ class TrainSystem {
 
   auto QueryTransfer(const std::string &date_str, const StationID &start, const StationID &dest, int sort_tag) -> std::string;
 
-  auto BuyTicket(const TicketID &ticket_id, const TrainID &train_id, const std::string &date_str, const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string;
+  auto BuyTicket(const TicketUserInfo &ticket_id, const TrainID &train_id, const std::string &date_str, const StationID &start, const StationID &dest, int quantity, bool wait_tag) -> std::string;
 
   auto QueryOrder(const UserName &username) -> std::string;
 
@@ -37,9 +38,9 @@ class TrainSystem {
 
  protected:
   void GetStartTrainsInfo(const vector<TrainStationInfo> &start_trains_station_info,
-                          vector<ArrivalInfo> *stations_after_start, vector<TrainInfo> &start_trains_info, int date);
+                          vector<vector<ArrivalInfo>> &stations_after_start, vector<TrainInfo> &start_trains_info, int date);
   void GetDestTrainsInfo(const vector<TrainStationInfo> &dest_trains_station_info,
-                         vector<DepartureInfo> *stations_before_dest, vector<TrainInfo> &dest_trains_info, int date);
+                         vector<vector<DepartureInfo>> &stations_before_dest, vector<TrainInfo> &dest_trains_info, int date);
   auto GetEarliestDate(const TrainInfo &train_info, int station_index, int arr_date, int arr_time) -> int;
 
   auto BuySelectedTicket(const TicketWaitInfo &new_ticket, TrainDateInfo &train_date_info) -> bool;
@@ -48,7 +49,8 @@ class TrainSystem {
   BPlusTreeIndex<TrainID, TrainInfo> train_info_db_;
   BPlusTreeIndex<TrainDateID, TrainDateInfo> train_date_info_db_;
   BPlusTreeIndex<TrainStationID, TrainStationInfo> train_station_info_db_;
-  BPlusTreeIndex<TicketID, TicketInfo> ticket_info_db_;
+  BPlusTreeIndex<TicketUserInfo, TicketInfo> ticket_info_db_;
+  Array<TicketUserInfo> ticket_user_info_db_;
 };
 
 }  // namespace conless
