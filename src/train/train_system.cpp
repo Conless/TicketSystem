@@ -3,7 +3,6 @@
 #include <climits>
 #include <string>
 #include "container/types.h"
-#include "ticket_system.h"
 #include "train/train_type.h"
 #include "utils/algorithm.h"
 #include "utils/exceptions.h"
@@ -14,7 +13,8 @@ TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
     : train_info_db_(file_name + "_train_info"),
       train_date_info_db_(file_name + "_train_date_info"),
       train_station_info_db_(file_name + "_train_station_info"),
-      ticket_info_db_(file_name + "_ticket_info") {}
+      ticket_info_db_(file_name + "_ticket_info"),
+      ticket_waitlist_info_db_(file_name + "_ticket_waitlist_info") {}
 
 auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
                            const vector<std::string> &prices, const std::string &start_time_str,
@@ -361,12 +361,7 @@ auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, 
   }
   // The remain case is waitlisted
   ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
-  if (train_date_info.waitlist_length_ == WAITLIST_LENGTH - 1) {
-    throw Exception("Waiting list not long enough.");
-  }
-  train_date_info.waitlist_[train_date_info.waitlist_length_++] = {new_ticket.ticket_id_, new_ticket.start_index_,
-                                                                   new_ticket.dest_index_, new_ticket.quantity_};
-  ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
+  ticket_waitlist_info_db_.Insert({{new_ticket.train_id_, new_ticket.date_}, new_ticket_wait}, new_ticket_wait);
   return "queue";
 }
 
@@ -400,8 +395,7 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
   if (ticket_infos.size() < order_num) {
     return false;
   }
-  auto target_ticket_iter =
-      ticket_info_db_.GetIterator(ticket_infos[ticket_infos.size() - order_num].ticket_id_);
+  auto target_ticket_iter = ticket_info_db_.GetIterator(ticket_infos[ticket_infos.size() - order_num].ticket_id_);
   if (target_ticket_iter.IsEnd()) {
     throw Exception("Iterator error.");
   }
@@ -411,31 +405,29 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
     throw Exception("Iterator error.");
   }
   auto &train_date_info = train_date_iter->second;
+  vector<TicketWaitInfo> ticket_waitlist_infos;
+  ticket_waitlist_info_db_.Search({{target_ticket_info.train_id_, target_ticket_info.date_}, TicketWaitInfo()},
+                                  &ticket_waitlist_infos, TrainDateTicketInfo::Comparator(CompareFirst));
   if (target_ticket_info.status_ == 1) {
     for (int i = target_ticket_info.start_index_; i < target_ticket_info.dest_index_; i++) {
       train_date_info.remain_tickets_[i] += target_ticket_info.quantity_;
     }
-    for (int i = 0; i < train_date_info.waitlist_length_; i++) {
-      if (BuySelectedTicket(train_date_info.waitlist_[i], train_date_info)) {
-        auto new_ticket_iter = ticket_info_db_.GetIterator(train_date_info.waitlist_[i].ticket_id_);
+    for (const auto &ticket_waitlist_info : ticket_waitlist_infos) {
+      if (BuySelectedTicket(ticket_waitlist_info, train_date_info)) {
+        auto new_ticket_iter = ticket_info_db_.GetIterator(ticket_waitlist_info.ticket_id_);
         if (new_ticket_iter.IsEnd()) {
           throw Exception("Iterator error.");
         }
         new_ticket_iter->second.status_ = 1;
-        train_date_info.waitlist_length_--;
-        for (int j = i; j < train_date_info.waitlist_length_; j++) {
-          train_date_info.waitlist_[j] = train_date_info.waitlist_[j + 1];
-        }
-        i--;
+        ticket_waitlist_info_db_.Delete(
+            {{target_ticket_info.train_id_, target_ticket_info.date_}, ticket_waitlist_info});
       }
     }
   } else {
-    for (int i = 0; i < train_date_info.waitlist_length_; i++) {
-      if (train_date_info.waitlist_[i].ticket_id_ == target_ticket_info.ticket_id_) {
-        train_date_info.waitlist_length_--;
-        for (int j = i; j < train_date_info.waitlist_length_; j++) {
-          train_date_info.waitlist_[j] = train_date_info.waitlist_[j + 1];
-        }
+    for (const auto &ticket_waitlist_info : ticket_waitlist_infos) {
+      if (ticket_waitlist_info.ticket_id_ == target_ticket_info.ticket_id_) {
+        ticket_waitlist_info_db_.Delete(
+            {{target_ticket_info.train_id_, target_ticket_info.date_}, ticket_waitlist_info});
         break;
       }
     }

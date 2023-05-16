@@ -2,6 +2,7 @@
 #define TRAIN_SYSTEM_H
 
 #include "container/array.h"
+#include "storage/index/b_plus_tree_index.h"
 #include "storage/index/b_plus_tree_index_nts.h"
 #include "train/train_type.h"
 
@@ -50,7 +51,7 @@ class TrainSystem {
   BPlusTreeIndex<TrainDateID, TrainDateInfo> train_date_info_db_;
   BPlusTreeIndex<TrainStationID, TrainStationInfo> train_station_info_db_;
   BPlusTreeIndex<TicketID, TicketInfo> ticket_info_db_;
-  // Array<TicketID> ticket_id_db_;
+  BPlusTreeIndex<TrainDateTicketInfo, TicketWaitInfo> ticket_waitlist_info_db_;
 };
 
 }  // namespace conless

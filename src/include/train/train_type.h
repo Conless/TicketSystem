@@ -53,20 +53,18 @@ struct TicketInfo {
   int price_;
 };
 
-struct TicketWaitInfo {
+struct TicketWaitInfo { // 64 bytes
   TicketID ticket_id_;
   int start_index_;
   int dest_index_;
   int quantity_;
+  auto operator<(const TicketWaitInfo &other) -> bool { return ticket_id_.first_ < other.ticket_id_.first_; }
 };
 
-struct TrainDateInfo {  // 4440 bytes
+struct TrainDateInfo {  // 440 bytes
   TrainID train_id_;
   int date_;
   int remain_tickets_[STATION_NUM_MAX];  // the remain ticket from the i-th station to the i+1-th, 0-base from the first
-
-  TicketWaitInfo waitlist_[WAITLIST_LENGTH];
-  int waitlist_length_{0};
 };
 
 struct TrainStationInfo {  // 80 bytes
@@ -86,6 +84,8 @@ struct DepartureInfo {
   StationID station_id_;
   int index_in_train_;
 };
+
+using TrainDateTicketInfo = PairKey<TrainDateID, TicketWaitInfo>;
 
 // Convert a date between int and std::string
 auto date_to_int(const std::string &date) -> int;  // NOLINT
