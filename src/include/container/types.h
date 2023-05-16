@@ -66,10 +66,10 @@ class StandardKey : public Key {
 template <size_t Length>
 class StringKey : public Key {
  public:
-  StringKey() { str_[0] = '\0'; }
+  StringKey() { str_[0] = str_[Length] = '\0'; }
   StringKey(const StringKey &other) : StringKey(other.str_) {}
   auto operator=(const StringKey &other) -> StringKey & {
-    for (size_t i = 0; i < Length; i++) {
+    for (size_t i = 0; i <= Length; i++) {
       str_[i] = other.str_[i];
       if (other.str_[i] == '\0') {
         break;
@@ -80,7 +80,7 @@ class StringKey : public Key {
 
  public:
   StringKey(const char *str) { // NOLINT
-    for (size_t i = 0; i < Length; i++) {
+    for (size_t i = 0; i <= Length; i++) {
       str_[i] = str[i];
       if (str[i] == '\0') {
         return;
