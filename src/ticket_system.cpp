@@ -197,9 +197,9 @@ void TicketSystem::QueryTransfer(int timestamp, const std::string &start, const 
 void TicketSystem::BuyTicket(int timestamp, const std::string &user_name, const std::string &train_id,
                              const std::string &date, const std::string &start, const std::string &dest, int quantity,
                              const std::string &wait_tag) {
+  
   TicketID new_ticket_id{UserName(user_name), user_sys_.BuyNewTicket(UserName(user_name))};
   if (new_ticket_id.second_ == -1) {
-    user_sys_.BuyNewTicketFailed(new_ticket_id.first_);
     std::cout << TimeStamp(timestamp) << "-1\n";
     return;
   }

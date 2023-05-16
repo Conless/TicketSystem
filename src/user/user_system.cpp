@@ -73,6 +73,9 @@ auto UserSystem::ModifyProfile(const UserName &cur_username, const UserName &use
     return "-1";
   }
   auto target_user_iter = user_info_db_.GetIterator(username);
+  if (target_user_iter.IsEnd()) {
+    return "-1";
+  }
   auto &user_info = target_user_iter->second;
   if (cur_user_info.privilege_ <= user_info.privilege_ && cur_username != username) {
     return "-1";
@@ -94,7 +97,7 @@ auto UserSystem::ModifyProfile(const UserName &cur_username, const UserName &use
 
 auto UserSystem::BuyNewTicket(const UserName &username) -> int {
   auto user_info_iter = user_info_db_.GetIterator(username);
-  if (!user_info_iter->second.login_status_) {
+  if (user_info_iter.IsEnd() || !user_info_iter->second.login_status_) {
     return -1;
   }
   auto &user_info = user_info_iter->second;
