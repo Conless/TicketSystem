@@ -36,7 +36,7 @@ auto date_to_string(int date) -> std::string {
     month++;
     date -= 30;
   }
-  if (date > 31) {
+  while (date > 31) {
     month++;
     date -= 31;
   }
@@ -142,14 +142,14 @@ auto to_string(const TrainInfo &train_info, int date) -> std::string {
     } else {
       int dep_min = train_info.dep_times_[i];
       int dep_date = date + dep_min / TIME_MAX_IN_DAY;
-      arr_time = date_to_string(dep_date) + " " + time_to_string(dep_min % TIME_MAX_IN_DAY);
+      dep_time = date_to_string(dep_date) + " " + time_to_string(dep_min % TIME_MAX_IN_DAY);
     }
     res += std::string{train_info.stations_id_[i]} + " ";
     res += arr_time + " -> ";
     res += dep_time + " ";
     res += std::to_string(train_info.prices_[i]) + " ";
     if (i != train_info.station_num_ - 1) {
-      res += std::to_string(train_info.seat_num_) + "\n";
+      res += std::to_string(train_info.seat_num_);
     } else {
       res += "x";
     }

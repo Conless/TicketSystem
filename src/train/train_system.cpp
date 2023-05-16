@@ -77,9 +77,6 @@ auto TrainSystem::QueryTrain(const TrainID &train_id, const std::string &date) -
     return "-1";
   }
   const auto &train_info = train_find_res.second;
-  if (!train_info.released_) {
-    return "-1";
-  }
   int date_num = date_to_int(date);
   if (date_num < train_info.start_date_ || date_num > train_info.end_date_) {
     return "-1";
@@ -190,8 +187,10 @@ void TrainSystem::GetDestTrainsInfo(const vector<TrainStationInfo> &dest_trains_
     const auto &dest_train_station_info = dest_trains_station_info[i];
     dest_trains_info.push_back(train_info_db_.Find(dest_train_station_info.train_id_).second);
     const auto &dest_train_info = dest_trains_info[i];
-    stations_before_dest[i].reserve(dest_train_info.station_num_ - dest_train_station_info.index_in_train_);
-    for (int j = dest_train_station_info.index_in_train_ + 1; j < dest_train_info.station_num_; j++) {
+    int dest_index = dest_train_station_info.index_in_train_;
+
+    stations_before_dest[i].reserve(dest_index);
+    for (int j = 0; j < dest_index; j++) {
       stations_before_dest[i].push_back({
           dest_train_info.stations_id_[j],
           j,
@@ -203,7 +202,19 @@ void TrainSystem::GetDestTrainsInfo(const vector<TrainStationInfo> &dest_trains_
 }
 
 auto TrainSystem::GetEarliestDate(const TrainInfo &train_info, int station_index, int arr_date, int arr_time) -> int {
-  return arr_date;
+  int dep_date_offset = train_info.dep_times_[station_index] / TIME_MAX_IN_DAY;
+  int dep_time = train_info.dep_times_[station_index] % TIME_MAX_IN_DAY;
+  if (arr_date > train_info.end_date_ + dep_date_offset ||
+      (arr_date == train_info.end_date_ + dep_date_offset && arr_time > dep_time)) {
+    return -1;
+  }
+  if (arr_date < train_info.start_date_) {
+    return train_info.start_date_;
+  }
+  if (dep_time < arr_time) {
+    return arr_date - dep_date_offset + 1;
+  }
+  return arr_date - dep_date_offset;
 }
 
 auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &start, const StationID &dest,
@@ -255,6 +266,11 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
         if (start_arr_info.station_id_ == dest_dep_info.station_id_) {
           int dest_dep_date = GetEarliestDate(dest_train_info, dest_dep_info.index_in_train_,
                                               start_arr_info.arrival_date_, start_arr_info.arrival_time_);
+          if (dest_dep_date == -1) {
+            k++;
+            l++;
+            continue;
+          }
 
           int dest_date =
               dest_dep_date + dest_train_info.arr_times_[dest_train_station_info.index_in_train_] / TIME_MAX_IN_DAY;
@@ -279,10 +295,18 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
             result.second += "\n";
             result.second +=
                 to_string(dest_train_info, train_date_info_db_.Find({second_train_id, dest_dep_date}).second,
-                          dest_dep_date, dest_dep_info.index_in_train_, start_arr_info.index_in_train_);
+                          dest_dep_date, dest_dep_info.index_in_train_, dest_train_station_info.index_in_train_);
             result.first = (sort_tag == 0) ? ResultKey{{tot_time, tot_cost}, {first_train_id, second_train_id}}
                                            : ResultKey{{tot_cost, tot_time}, {first_train_id, second_train_id}};
           }
+          k++;
+          l++;
+          continue;
+        }
+        if (start_arr_info.station_id_ < dest_dep_info.station_id_) {
+          k++;
+        } else {
+          l++;
         }
       }
     }
@@ -370,29 +394,41 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
     throw Exception("Iterator error.");
   }
   auto &target_ticket_info = target_ticket_iter->second;
-  target_ticket_info.status_ = -1;
   auto train_date_iter = train_date_info_db_.GetIterator({target_ticket_info.train_id_, target_ticket_info.date_});
   if (train_date_iter.IsEnd()) {
     throw Exception("Iterator error.");
   }
   auto &train_date_info = train_date_iter->second;
-  for (int i = target_ticket_info.start_index_; i < target_ticket_info.dest_index_; i++) {
-    train_date_info.remain_tickets_[i] += target_ticket_info.quantity_;
-  }
-  for (int i = 0; i < train_date_info.waitlist_length_; i++) {
-    if (BuySelectedTicket(train_date_info.waitlist_[i], train_date_info)) {
-      auto new_ticket_iter = ticket_info_db_.GetIterator(train_date_info.waitlist_[i].ticket_id_);
-      if (new_ticket_iter.IsEnd()) {
-        throw Exception("Iterator error.");
+  if (target_ticket_info.status_ == 1) {
+    for (int i = target_ticket_info.start_index_; i < target_ticket_info.dest_index_; i++) {
+      train_date_info.remain_tickets_[i] += target_ticket_info.quantity_;
+    }
+    for (int i = 0; i < train_date_info.waitlist_length_; i++) {
+      if (BuySelectedTicket(train_date_info.waitlist_[i], train_date_info)) {
+        auto new_ticket_iter = ticket_info_db_.GetIterator(train_date_info.waitlist_[i].ticket_id_);
+        if (new_ticket_iter.IsEnd()) {
+          throw Exception("Iterator error.");
+        }
+        new_ticket_iter->second.status_ = 1;
+        train_date_info.waitlist_length_--;
+        for (int j = i; j < train_date_info.waitlist_length_; j++) {
+          train_date_info.waitlist_[j] = train_date_info.waitlist_[j + 1];
+        }
+        i--;
       }
-      new_ticket_iter->second.status_ = 1;
-      train_date_info.waitlist_length_--;
-      for (int j = i; j < train_date_info.waitlist_length_; j++) {
-        train_date_info.waitlist_[j] = train_date_info.waitlist_[j + 1];
+    }
+  } else {
+    for (int i = 0; i < train_date_info.waitlist_length_; i++) {
+      if (train_date_info.waitlist_[i].ticket_id_ == target_ticket_info.ticket_id_) {
+        train_date_info.waitlist_length_--;
+        for (int j = i; j < train_date_info.waitlist_length_; j++) {
+          train_date_info.waitlist_[j] = train_date_info.waitlist_[j + 1];
+        }
+        break;
       }
-      i--;
     }
   }
+  target_ticket_info.status_ = -1;
   return true;
 }
 
