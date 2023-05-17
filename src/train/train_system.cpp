@@ -14,7 +14,7 @@ TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
       train_date_info_db_(file_name + "_train_date_info"),
       train_station_info_db_(file_name + "_train_station_info"),
       ticket_info_db_(file_name + "_ticket_info"),
-      ticket_waitlist_info_db_(file_name + "_ticket_waitlist_info", ) {}
+      ticket_waitlist_info_db_(file_name + "_ticket_waitlist_info") {}
 
 auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
                            const vector<std::string> &prices, const std::string &start_time_str,
@@ -24,7 +24,7 @@ auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_nu
     return false;
   }
   TrainInfo train_info{train_id, seat_num, station_num, date_to_int(sale_date.front()), date_to_int(sale_date.back()),
-                       type};
+                       type, false};
   int start_time = time_to_int(start_time_str);
 
   for (int i = 0; i < station_num; i++) {
@@ -210,7 +210,7 @@ auto TrainSystem::GetEarliestDate(const TrainInfo &train_info, int station_index
       (arr_date == train_info.end_date_ + dep_date_offset && arr_time > dep_time)) {
     return -1;
   }
-  if (arr_date < train_info.start_date_) {
+  if (arr_date < train_info.start_date_ + dep_date_offset) {
     return train_info.start_date_;
   }
   if (dep_time < arr_time) {
@@ -329,6 +329,9 @@ auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, 
     return "-1";
   }
   const auto &train_info = train_find_res.second;
+  if (train_info.seat_num_ < quantity) {
+    return "-1";
+  }
   TicketInfo new_ticket{ticket_id, 0, train_id, start, -1, -1, dest, -1, -1, -1, quantity, -1};
   new_ticket.start_index_ = get_station_index(train_info, start);
   new_ticket.dest_index_ = get_station_index(train_info, dest);
@@ -400,6 +403,9 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
     throw Exception("Iterator error.");
   }
   auto &target_ticket_info = target_ticket_iter->second;
+  if (target_ticket_info.status_ == -1) {
+    return false;
+  }
   auto train_date_iter = train_date_info_db_.GetIterator({target_ticket_info.train_id_, target_ticket_info.date_});
   if (train_date_iter.IsEnd()) {
     throw Exception("Iterator error.");
