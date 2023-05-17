@@ -402,10 +402,11 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
   if (target_ticket_iter.IsEnd()) {
     throw Exception("Iterator error.");
   }
-  auto &target_ticket_info = target_ticket_iter->second;
+  const auto target_ticket_info = target_ticket_iter->second;
   if (target_ticket_info.status_ == -1) {
     return false;
   }
+  target_ticket_iter->second.status_ = -1;
   auto train_date_iter = train_date_info_db_.GetIterator({target_ticket_info.train_id_, target_ticket_info.date_});
   if (train_date_iter.IsEnd()) {
     throw Exception("Iterator error.");
@@ -438,7 +439,6 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
       }
     }
   }
-  target_ticket_info.status_ = -1;
   return true;
 }
 
