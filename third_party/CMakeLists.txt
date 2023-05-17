@@ -19,6 +19,8 @@ add_executable(example_bustub bustub/src/main.cpp)
 
 add_library(bustub ${BUSTUB_SOURCE_CPPS})
 
+target_link_libraries(example_bustub bustub)
+
 set(ARRAY_SOURCE_CPPS
     array/src/container/array.cpp
 )
