@@ -53,6 +53,7 @@ namespace bustub {
   template class TypeName<TrainDateID, TrainDateInfo, TrainDateID::Comparator>;                       /* NOLINT*/  \
   template class TypeName<TrainStationID, TrainStationInfo, TrainStationID::Comparator>;              /* NOLINT*/  \
   template class TypeName<TicketID, TicketInfo, TicketID::Comparator>;                                /* NOLINT*/  \
+  template class TypeName<TrainDateTicketInfo, TicketWaitInfo, TrainDateTicketInfo::Comparator>; /* NOLINT */  \
   }  // namespace bustub
 
 #define BUSTUB_NTS_DECLARE(TypeName)                                                                              \
@@ -66,6 +67,7 @@ namespace bustub {
   template class TypeName<TrainDateID, TrainDateInfo, TrainDateID::Comparator, false>;               /* NOLINT*/  \
   template class TypeName<TrainStationID, TrainStationInfo, TrainStationID::Comparator, false>;      /* NOLINT*/  \
   template class TypeName<TicketID, TicketInfo, TicketID::Comparator, false>;                        /* NOLINT*/  \
+  template class TypeName<TrainDateTicketInfo, TicketWaitInfo, TrainDateTicketInfo::Comparator, false>; /* NOLINT */  \
   }                                                                                                  // namespace bustub
 
 #define BUSTUB_INTERNAL_DECLARE(TypeName)                                                                          \
@@ -77,6 +79,7 @@ namespace bustub {
   template class TypeName<PairKey<StringKey<20>, int>, int, PairKey<StringKey<20>, int>::Comparator>; /* NOLINT*/  \
   template class TypeName<PairKey<StringKey<30>, StringKey<20>>, int,                                 /* NOLINT*/  \
                           PairKey<StringKey<30>, StringKey<20>>::Comparator>;                         /* NOLINT*/  \
+  template class TypeName<TrainDateTicketInfo, int, TrainDateTicketInfo::Comparator>; /* NOLINT */  \
   }  // namespace bustub
 
 #endif

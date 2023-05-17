@@ -21,8 +21,8 @@ BPLUSTREE_INDEX_NTS_TYPE::BPlusTreeIndex(std::unique_ptr<IndexMetadata> &&metada
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-BPLUSTREE_INDEX_NTS_TYPE::BPlusTreeIndex(const std::string &file_name, const KeyComparator &comparator,
-                                         int leaf_max_size, int internal_max_size, int buffer_pool_size, int replacer_k)
+BPLUSTREE_INDEX_NTS_TYPE::BPlusTreeIndex(const std::string &file_name,
+                                         int leaf_max_size, int internal_max_size, int buffer_pool_size, int replacer_k, const KeyComparator &comparator)
     : Index(nullptr) {
   disk_manager_ = new DiskManager(file_name + ".db", false);
   bpm_ = new BufferPoolManager(buffer_pool_size, disk_manager_, replacer_k, nullptr, false);

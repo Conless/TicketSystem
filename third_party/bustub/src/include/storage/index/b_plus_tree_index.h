@@ -33,9 +33,9 @@ class BPlusTreeIndex : public Index {};
 INDEX_TEMPLATE_ARGUMENTS
 class BPlusTreeIndex<KeyType, ValueType, KeyComparator, true> : public Index {
  public:
-  explicit BPlusTreeIndex(const std::string &file_name, const KeyComparator &comparator = KeyComparator(),
-                          int leaf_max_size = LEAF_PAGE_SIZE, int internal_max_size = INTERNAL_PAGE_SIZE,
-                          int buffer_pool_size = BUFFER_POOL_SIZE, int replacer_k = LRUK_REPLACER_K);
+  explicit BPlusTreeIndex(const std::string &file_name, int leaf_max_size = LEAF_PAGE_SIZE,
+                          int internal_max_size = INTERNAL_PAGE_SIZE, int buffer_pool_size = BUFFER_POOL_SIZE,
+                          int replacer_k = LRUK_REPLACER_K, const KeyComparator &comparator = KeyComparator());
 
   ~BPlusTreeIndex() override;
 
