@@ -198,6 +198,10 @@ auto to_string(const TicketInfo &ticket_info) -> std::string {
   return res;
 }
 
+auto to_string(const TicketWaitInfo &ticket_wait_info) -> std::string {
+  return ticket_wait_info.ticket_id_.ToString();
+}
+
 auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int {
   for (int i = 0; i < train_info.station_num_; i++) {
     if (train_info.stations_id_[i] == station_id) {

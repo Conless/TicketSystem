@@ -168,8 +168,9 @@ class PairKey : public Key {
  public:
   inline auto ToString() const -> std::string override {
     using std::to_string;
-    return ("{" + static_cast<std::string>(first_) + "," + to_string(second_) + "}");
+    return ("{" + first_.ToString() + "," + to_string(second_) + "}");
   }
+  friend auto operator<(const PairKey<T1, T2> &lhs, const PairKey<T1, T2> &rhs) { return lhs.first_ == rhs.first_ ? lhs.second_ < rhs.second_ : lhs.first_ < rhs.first_; }
   friend auto operator==(const PairKey<T1, T2> &lhs, const PairKey<T1, T2> &rhs) -> bool { return lhs.first_ == rhs.first_ && lhs.second_ == rhs.second_; }
   friend auto operator<<(std::ostream &os, const PairKey<T1, T2> &rhs) -> std::ostream & {
     return (os << '{' << rhs.first_ << ',' << rhs.second_ << '}');
@@ -182,7 +183,7 @@ class PairKey : public Key {
     Comparator(const Comparator &) = default;
     Comparator(Comparator &&other) noexcept { type_ = other.type_; }
     inline auto operator()(const PairKey<T1, T2> &lhs, const PairKey<T1, T2> &rhs) const -> int {
-      if (type_ == CompareFirst || lhs.first_ != rhs.first_) {
+      if (type_ == CompareFirst || !(lhs.first_ == rhs.first_)) {
         if (lhs.first_ < rhs.first_) {
           return -1;
         }

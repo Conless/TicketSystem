@@ -1,6 +1,7 @@
 #ifndef TRAIN_TYPE_H
 #define TRAIN_TYPE_H
 
+#include <ostream>
 #include "container/types.h"
 #include "user/user_type.h"
 
@@ -13,7 +14,6 @@ using TrainStationID = PairKey<StationID, TrainID>;
 using TicketID = PairKey<UserName, int>;
 
 constexpr int STATION_NUM_MAX = 100;
-constexpr int WAITLIST_LENGTH = 200;
 
 constexpr int TIME_MAX_IN_DAY = 24 * 60;
 
@@ -58,7 +58,9 @@ struct TicketWaitInfo { // 64 bytes
   int start_index_;
   int dest_index_;
   int quantity_;
-  auto operator<(const TicketWaitInfo &other) -> bool { return ticket_id_.first_ < other.ticket_id_.first_; }
+  friend auto operator<<(std::ostream &os, const TicketWaitInfo &rhs) -> std::ostream & {
+    return os << rhs.ticket_id_.ToString();
+  }
 };
 
 struct TrainDateInfo {  // 440 bytes
@@ -85,7 +87,7 @@ struct DepartureInfo {
   int index_in_train_;
 };
 
-using TrainDateTicketInfo = PairKey<TrainDateID, TicketWaitInfo>;
+using TrainDateTicketInfo = PairKey<TrainDateID, int>;
 
 // Convert a date between int and std::string
 auto date_to_int(const std::string &date) -> int;  // NOLINT
@@ -100,6 +102,7 @@ auto to_string(const TrainInfo &train_info, int date) -> std::string;           
 auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info, int date, int start_index,  // NOLINT
                int dest_index) -> std::string;
 auto to_string(const TicketInfo &ticket_info) -> std::string;  // NOLINT
+auto to_string(const TicketWaitInfo &ticket_wait_info) -> std::string; // NOLINT
 
 // Get the station index in train_info
 auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int;  // NOLINT

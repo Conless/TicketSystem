@@ -30,10 +30,6 @@ class UserSystem {
   auto ModifyProfile(const UserName &cur_username, const UserName &username, const UserPassword &passwd,
                      const UserNickname &nickname, const UserEmail &mail_addr, int priv) -> std::string;
 
-  auto BuyNewTicket(const UserName &username) -> int;
-
-  void BuyNewTicketFailed(const UserName &username);
-
   auto Initialized() const -> bool;
 
   auto CheckLogin(const UserName &username) -> bool;

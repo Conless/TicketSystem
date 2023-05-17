@@ -1,7 +1,6 @@
 #ifndef TRAIN_SYSTEM_H
 #define TRAIN_SYSTEM_H
 
-#include "container/array.h"
 #include "storage/index/b_plus_tree_index.h"
 #include "storage/index/b_plus_tree_index_nts.h"
 #include "train/train_type.h"

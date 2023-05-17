@@ -95,21 +95,6 @@ auto UserSystem::ModifyProfile(const UserName &cur_username, const UserName &use
   return std::string{user_info};
 }
 
-auto UserSystem::BuyNewTicket(const UserName &username) -> int {
-  auto user_info_iter = user_info_db_.GetIterator(username);
-  if (user_info_iter.IsEnd() || !user_info_iter->second.login_status_) {
-    return -1;
-  }
-  auto &user_info = user_info_iter->second;
-  return ++user_info.ticket_count_;
-}
-
-void UserSystem::BuyNewTicketFailed(const UserName &username) {
-  auto user_info_iter = user_info_db_.GetIterator(username);
-  auto &user_info = user_info_iter->second;
-  --user_info.ticket_count_;
-}
-
 auto UserSystem::Initialized() const -> bool {
   return !user_info_db_.Empty();
 }

@@ -17,7 +17,6 @@ struct UserInfo {
   UserEmail email_;
   int privilege_;
   bool login_status_{false};
-  int ticket_count_{0};
 
   explicit operator std::string();
 };
