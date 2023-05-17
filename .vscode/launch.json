@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/code",
             "args": [
-              "<${workspaceFolder}/samples/basic_3/5.in"
+              "<${workspaceFolder}/samples/basic_4/5.in"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",

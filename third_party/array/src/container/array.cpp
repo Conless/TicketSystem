@@ -39,6 +39,6 @@ void Array<T>::SetValueAt(int index, const T &value) {
 }
 
 template class Array<int>;
-template class Array<TicketUserInfo>;
+template class Array<TicketID>;
 
 }  // namespace conless
