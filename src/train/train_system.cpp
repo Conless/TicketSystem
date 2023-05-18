@@ -159,11 +159,12 @@ void TrainSystem::GetStartTrainsInfo(const vector<TrainStationInfo> &start_train
   start_trains_info.reserve(start_trains_station_info.size());
   for (int i = 0; i < start_trains_station_info.size(); i++) {
     const auto &start_train_station_info = start_trains_station_info[i];
+    stations_after_start.push_back({});
     if (date < start_train_station_info.dep_date_start_ || date > start_train_station_info.dep_date_end_) {
+      start_trains_info.push_back({});
       continue;
     }
     start_trains_info.push_back(train_info_db_.Find(start_train_station_info.train_id_).second);
-    stations_after_start.push_back(vector<ArrivalInfo>());
     const auto &start_train_info = start_trains_info[i];
     int start_index = start_train_station_info.index_in_train_;
 
