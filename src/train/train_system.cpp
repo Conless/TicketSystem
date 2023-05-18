@@ -12,7 +12,7 @@ namespace conless {
 TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
     : train_info_db_(file_name + "_train_info", 25),
       train_date_info_db_(file_name + "_train_date_info"),
-      train_station_info_db_(file_name + "_train_station_info", 15),
+      train_station_info_db_(file_name + "_train_station_info", 20),
       ticket_info_db_(file_name + "_ticket_info", 55),
       ticket_waitlist_info_db_(file_name + "_ticket_waitlist_info") {}
 
