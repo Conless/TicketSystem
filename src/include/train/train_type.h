@@ -73,6 +73,8 @@ struct TrainStationInfo {  // 80 bytes
   TrainID train_id_;
   StationID stations_id_;
   int index_in_train_;
+  int dep_date_start_;
+  int dep_date_end_;
 };
 
 struct ArrivalInfo {

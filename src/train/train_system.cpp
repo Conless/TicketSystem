@@ -10,10 +10,10 @@
 namespace conless {
 
 TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
-    : train_info_db_(file_name + "_train_info"),
+    : train_info_db_(file_name + "_train_info", 25),
       train_date_info_db_(file_name + "_train_date_info"),
-      train_station_info_db_(file_name + "_train_station_info", 20),
-      ticket_info_db_(file_name + "_ticket_info", 50),
+      train_station_info_db_(file_name + "_train_station_info", 15),
+      ticket_info_db_(file_name + "_ticket_info", 55),
       ticket_waitlist_info_db_(file_name + "_ticket_waitlist_info") {}
 
 auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_num, const vector<std::string> &stations,
@@ -24,7 +24,7 @@ auto TrainSystem::AddTrain(const TrainID &train_id, int station_num, int seat_nu
     return false;
   }
   TrainInfo train_info{train_id, seat_num, station_num, date_to_int(sale_date.front()), date_to_int(sale_date.back()),
-                       type, false};
+                       type,     false};
   int start_time = time_to_int(start_time_str);
 
   for (int i = 0; i < station_num; i++) {
@@ -66,7 +66,10 @@ auto TrainSystem::ReleaseTrain(const TrainID &train_id) -> bool {
     train_date_info_db_.Insert({train_id, i}, train_date_info);
   }
   for (int i = 0; i < train_info.station_num_; i++) {
-    train_station_info_db_.Insert({train_info.stations_id_[i], train_id}, {train_id, train_info.stations_id_[i], i});
+    int date_offset = train_info.dep_times_[i] / TIME_MAX_IN_DAY;
+    train_station_info_db_.Insert({train_info.stations_id_[i], train_id},
+                                  {train_id, train_info.stations_id_[i], i, train_info.start_date_ + date_offset,
+                                   train_info.end_date_ + date_offset});
   }
   return true;
 }
@@ -112,25 +115,22 @@ auto TrainSystem::QueryTicket(const std::string &date_str, const StationID &star
       int start_index = start_train_station_info.index_in_train_;
       int dest_index = dest_train_station_info.index_in_train_;
 
-      if (start_index < dest_index) {  // If the train come to dest after start
+      if (start_index < dest_index && date >= start_train_station_info.dep_date_start_ &&
+          date <= start_train_station_info.dep_date_end_) {  // If the train come to dest after start and date is valid
         auto train_find_res = train_info_db_.Find(start_train_station_info.train_id_);
         const auto &train_info = train_find_res.second;
 
         int start_date = date - train_info.dep_times_[start_index] / TIME_MAX_IN_DAY;
+        auto train_date_info = train_date_info_db_.Find({train_info.train_id_, start_date}).second;
 
-        if (train_find_res.first && start_date >= train_info.start_date_ &&
-            start_date <= train_info.end_date_) {  // Date is valid
-          auto train_date_info = train_date_info_db_.Find({train_info.train_id_, start_date}).second;
+        std::string train_ticket_info = to_string(train_info, train_date_info, start_date, start_index, dest_index);
 
-          std::string train_ticket_info = to_string(train_info, train_date_info, start_date, start_index, dest_index);
-
-          if (sort_tag == 0) {  // Sort by time
-            int time = train_info.arr_times_[dest_index] - train_info.dep_times_[start_index];
-            trains_ticket_info.push_back({{time, train_info.train_id_}, train_ticket_info});
-          } else {  // Sort by cost
-            int cost = train_info.prices_[dest_index] - train_info.prices_[start_index];
-            trains_ticket_info.push_back({{cost, train_info.train_id_}, train_ticket_info});
-          }
+        if (sort_tag == 0) {  // Sort by time
+          int time = train_info.arr_times_[dest_index] - train_info.dep_times_[start_index];
+          trains_ticket_info.push_back({{time, train_info.train_id_}, train_ticket_info});
+        } else {  // Sort by cost
+          int cost = train_info.prices_[dest_index] - train_info.prices_[start_index];
+          trains_ticket_info.push_back({{cost, train_info.train_id_}, train_ticket_info});
         }
       }
       i++;
@@ -159,16 +159,15 @@ void TrainSystem::GetStartTrainsInfo(const vector<TrainStationInfo> &start_train
   start_trains_info.reserve(start_trains_station_info.size());
   for (int i = 0; i < start_trains_station_info.size(); i++) {
     const auto &start_train_station_info = start_trains_station_info[i];
+    if (date < start_train_station_info.dep_date_start_ || date > start_train_station_info.dep_date_end_) {
+      continue;
+    }
     start_trains_info.push_back(train_info_db_.Find(start_train_station_info.train_id_).second);
     stations_after_start.push_back(vector<ArrivalInfo>());
     const auto &start_train_info = start_trains_info[i];
     int start_index = start_train_station_info.index_in_train_;
 
     int start_date = date - start_train_info.dep_times_[start_index] / TIME_MAX_IN_DAY;
-    if (start_date < start_train_info.start_date_ || start_date > start_train_info.end_date_) {
-      continue;
-    }
-
     stations_after_start[i].reserve(start_train_info.station_num_ - start_index);
     for (int j = start_index + 1; j < start_train_info.station_num_; j++) {
       int arr_time = start_train_info.arr_times_[j];
@@ -364,7 +363,8 @@ auto TrainSystem::BuyTicket(const TicketID &ticket_id, const TrainID &train_id, 
   }
   // The remain case is waitlisted
   ticket_info_db_.Insert(new_ticket.ticket_id_, new_ticket);
-  ticket_waitlist_info_db_.Insert({{new_ticket.train_id_, new_ticket.date_}, new_ticket_wait.ticket_id_.second_}, new_ticket_wait);
+  ticket_waitlist_info_db_.Insert({{new_ticket.train_id_, new_ticket.date_}, new_ticket_wait.ticket_id_.second_},
+                                  new_ticket_wait);
   return "queue";
 }
 
@@ -413,8 +413,8 @@ auto TrainSystem::RefundTicket(const UserName &username, int order_num) -> bool 
   }
   auto &train_date_info = train_date_iter->second;
   vector<TicketWaitInfo> ticket_waitlist_infos;
-  ticket_waitlist_info_db_.Search({{target_ticket_info.train_id_, target_ticket_info.date_}, 0},
-                                  &ticket_waitlist_infos, TrainDateTicketInfo::Comparator(CompareFirst));
+  ticket_waitlist_info_db_.Search({{target_ticket_info.train_id_, target_ticket_info.date_}, 0}, &ticket_waitlist_infos,
+                                  TrainDateTicketInfo::Comparator(CompareFirst));
   if (target_ticket_info.status_ == 1) {
     for (int i = target_ticket_info.start_index_; i < target_ticket_info.dest_index_; i++) {
       train_date_info.remain_tickets_[i] += target_ticket_info.quantity_;
