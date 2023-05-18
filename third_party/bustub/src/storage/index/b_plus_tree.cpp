@@ -256,15 +256,15 @@ auto BPLUSTREE_TYPE::GetValueInLeafPage(const KeyType &key, vector<ValueType> *r
     }
     result->push_back(leaf_page->ValueAt(index));
   }
+  page_id_t next_leaf_id = leaf_page->GetNextPageId();
+  ctx->read_set_.pop_back();
   if (index == size) {  // Reach the end of current page
-    page_id_t next_leaf_id = leaf_page->GetNextPageId();
     if (next_leaf_id != INVALID_PAGE_ID) {  // Reach the last page
       auto next_guard = bpm_->FetchPageRead(next_leaf_id);
       ctx->read_set_.emplace_back(std::move(next_guard));
       GetValueInLeafPage(key, result, ctx, comparator);
     }
   }
-  ctx->read_set_.pop_back();
   return !result->empty();
 }
 

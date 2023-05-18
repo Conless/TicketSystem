@@ -245,15 +245,15 @@ auto BPLUSTREE_NTS_TYPE::GetValueInLeafPage(const KeyType &key, vector<ValueType
       result->push_back(leaf_page->ValueAt(index));
     }
   }
+  page_id_t next_leaf_id = leaf_page->GetNextPageId();
+  ctx->basic_set_.pop_back();
   if (index == size) {  // Reach the end of current page
-    page_id_t next_leaf_id = leaf_page->GetNextPageId();
     if (next_leaf_id != INVALID_PAGE_ID) {
       auto next_guard = bpm_->FetchPageBasic(next_leaf_id);
       ctx->basic_set_.push_back(std::move(next_guard));
       GetValueInLeafPage(key, result, ctx, comparator);
     }
   }
-  ctx->basic_set_.pop_back();
   return !result->empty();
 }
 
