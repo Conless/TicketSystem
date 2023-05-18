@@ -177,6 +177,26 @@ auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info
   train_ticket_info += std::to_string(remain_ticket);
   return train_ticket_info;
 }
+auto to_string(const TrainDateInfo &train_date_info, const TrainStationInfo &start, const TrainStationInfo &dest, int date) -> std::string {
+  std::string train_ticket_info;
+  int start_dep_time = start.dep_time_;
+  int dest_arr_time = dest.arr_time_;
+  train_ticket_info += std::string{train_date_info.train_id_} + " ";
+  train_ticket_info += std::string{start.stations_id_} + " ";
+  train_ticket_info += date_to_string(date + start_dep_time / TIME_MAX_IN_DAY) + " ";
+  train_ticket_info += time_to_string(start_dep_time) + " -> ";
+  train_ticket_info += std::string{dest.stations_id_} + " ";
+  train_ticket_info += date_to_string(date + dest_arr_time / TIME_MAX_IN_DAY) + " ";
+  train_ticket_info += time_to_string(dest_arr_time) + " ";
+  train_ticket_info += std::to_string(dest.price_ - start.price_) + " ";
+
+  int remain_ticket = train_date_info.remain_tickets_[start.index_in_train_];
+  for (int i = start.index_in_train_ + 1; i < dest.index_in_train_; i++) {
+    remain_ticket = std::min(remain_ticket, train_date_info.remain_tickets_[i]);
+  }
+  train_ticket_info += std::to_string(remain_ticket);
+  return train_ticket_info;
+}
 
 auto to_string(const TicketInfo &ticket_info) -> std::string {
   std::string res;

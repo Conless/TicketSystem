@@ -73,5 +73,4 @@ for i in $list; do
   rm "$outfile" "$difffile"
 done
 
-rm -r "$testdir"
 echo "Testcase complete, answer correct."

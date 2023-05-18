@@ -53,7 +53,7 @@ struct TicketInfo {
   int price_;
 };
 
-struct TicketWaitInfo { // 64 bytes
+struct TicketWaitInfo {  // 64 bytes
   TicketID ticket_id_;
   int start_index_;
   int dest_index_;
@@ -73,8 +73,13 @@ struct TrainStationInfo {  // 80 bytes
   TrainID train_id_;
   StationID stations_id_;
   int index_in_train_;
+
   int dep_date_start_;
   int dep_date_end_;
+
+  int arr_time_;
+  int dep_time_;
+  int price_;
 };
 
 struct ArrivalInfo {
@@ -99,12 +104,14 @@ auto date_to_string(int date) -> std::string;      // NOLINT
 auto time_to_int(const std::string &time) -> int;  // NOLINT
 auto time_to_string(int time) -> std::string;      // NOLINT
 
-auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info) -> std::string;             // NOLINT
-auto to_string(const TrainInfo &train_info, int date) -> std::string;                                         // NOLINT
+auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info) -> std::string;  // NOLINT
+auto to_string(const TrainInfo &train_info, int date) -> std::string;                              // NOLINT
+auto to_string(const TrainDateInfo &train_date_info, const TrainStationInfo &start,                // NOLINT
+               const TrainStationInfo &dest, int date) -> std::string;
+auto to_string(const TicketInfo &ticket_info) -> std::string;                                                 // NOLINT
 auto to_string(const TrainInfo &train_info, const TrainDateInfo &train_date_info, int date, int start_index,  // NOLINT
                int dest_index) -> std::string;
-auto to_string(const TicketInfo &ticket_info) -> std::string;  // NOLINT
-auto to_string(const TicketWaitInfo &ticket_wait_info) -> std::string; // NOLINT
+auto to_string(const TicketWaitInfo &ticket_wait_info) -> std::string;  // NOLINT
 
 // Get the station index in train_info
 auto get_station_index(const TrainInfo &train_info, const StationID &station_id) -> int;  // NOLINT
