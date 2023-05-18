@@ -21,8 +21,8 @@ BPLUSTREE_INDEX_NTS_TYPE::BPlusTreeIndex(std::unique_ptr<IndexMetadata> &&metada
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-BPLUSTREE_INDEX_NTS_TYPE::BPlusTreeIndex(const std::string &file_name,
-                                         int leaf_max_size, int internal_max_size, int buffer_pool_size, int replacer_k, const KeyComparator &comparator)
+BPLUSTREE_INDEX_NTS_TYPE::BPlusTreeIndex(const std::string &file_name, int buffer_pool_size, int leaf_max_size,
+                                         int internal_max_size, int replacer_k, const KeyComparator &comparator)
     : Index(nullptr) {
   disk_manager_ = new DiskManager(file_name + ".db", false);
   bpm_ = new BufferPoolManager(buffer_pool_size, disk_manager_, replacer_k, nullptr, false);
@@ -52,9 +52,7 @@ BPLUSTREE_INDEX_NTS_TYPE::~BPlusTreeIndex() {
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_INDEX_NTS_TYPE::Empty() const -> bool {
-  return container_->IsEmpty();
-}
+auto BPLUSTREE_INDEX_NTS_TYPE::Empty() const -> bool { return container_->IsEmpty(); }
 
 INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_NTS_TYPE::InsertEntry(const Tuple &key, RID rid, Transaction *transaction) -> bool {
@@ -106,7 +104,8 @@ auto BPLUSTREE_INDEX_NTS_TYPE::GetBeginIterator(const KeyType &key) -> INDEXITER
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_INDEX_NTS_TYPE::GetFirstIterator(const KeyType &key, const KeyComparator &comparator) -> INDEXITERATOR_TYPE {
+auto BPLUSTREE_INDEX_NTS_TYPE::GetFirstIterator(const KeyType &key, const KeyComparator &comparator)
+    -> INDEXITERATOR_TYPE {
   return container_->First(key, comparator);
 }
 

@@ -25,8 +25,8 @@ BPLUSTREE_INDEX_TYPE::BPlusTreeIndex(std::unique_ptr<IndexMetadata> &&metadata, 
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-BPLUSTREE_INDEX_TYPE::BPlusTreeIndex(const std::string &file_name, int leaf_max_size,
-                                     int internal_max_size, int buffer_pool_size, int replacer_k, const KeyComparator &comparator)
+BPLUSTREE_INDEX_TYPE::BPlusTreeIndex(const std::string &file_name, int buffer_pool_size, int leaf_max_size,
+                                     int internal_max_size, int replacer_k, const KeyComparator &comparator)
     : Index(nullptr) {
   disk_manager_ = new DiskManager(file_name + ".db");
   bpm_ = new BufferPoolManager(buffer_pool_size, disk_manager_, replacer_k, nullptr, true);
@@ -39,9 +39,7 @@ BPLUSTREE_INDEX_TYPE::BPlusTreeIndex(const std::string &file_name, int leaf_max_
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_INDEX_TYPE::Empty() const -> bool {
-  return container_->IsEmpty();
-}
+auto BPLUSTREE_INDEX_TYPE::Empty() const -> bool { return container_->IsEmpty(); }
 
 INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_TYPE::InsertEntry(const Tuple &key, RID rid, Transaction *transaction) -> bool {
@@ -80,7 +78,7 @@ auto BPLUSTREE_INDEX_TYPE::Find(const KeyType &key, Transaction *transaction) ->
 
 INDEX_TEMPLATE_ARGUMENTS
 void BPLUSTREE_INDEX_TYPE::Search(const KeyType &key, vector<ValueType> *result, const KeyComparator &comparator,
-                                      Transaction *transaction) {
+                                  Transaction *transaction) {
   container_->GetValue(key, result, comparator, transaction);
 }
 
@@ -88,9 +86,7 @@ INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_TYPE::GetBeginIterator() -> INDEXITERATOR_TYPE { return container_->Begin(); }
 
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_INDEX_TYPE::GetBeginIterator(const KeyType &key) -> INDEXITERATOR_TYPE {
-  return container_->Begin(key);
-}
+auto BPLUSTREE_INDEX_TYPE::GetBeginIterator(const KeyType &key) -> INDEXITERATOR_TYPE { return container_->Begin(key); }
 
 INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_TYPE::GetFirstIterator(const KeyType &key, const KeyComparator &comparator) -> INDEXITERATOR_TYPE {
@@ -98,9 +94,7 @@ auto BPLUSTREE_INDEX_TYPE::GetFirstIterator(const KeyType &key, const KeyCompara
 }
 
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_INDEX_TYPE::GetIterator(const KeyType &key) -> INDEXITERATOR_TYPE {
-  return container_->Find(key);
-}
+auto BPLUSTREE_INDEX_TYPE::GetIterator(const KeyType &key) -> INDEXITERATOR_TYPE { return container_->Find(key); }
 
 INDEX_TEMPLATE_ARGUMENTS
 auto BPLUSTREE_INDEX_TYPE::GetEndIterator() -> INDEXITERATOR_TYPE { return container_->End(); }
