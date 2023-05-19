@@ -182,10 +182,10 @@ auto to_string(const TrainDateInfo &train_date_info, const TrainStationInfo &sta
   int start_dep_time = start.dep_time_;
   int dest_arr_time = dest.arr_time_;
   train_ticket_info += std::string{train_date_info.train_id_} + " ";
-  train_ticket_info += std::string{start.stations_id_} + " ";
+  train_ticket_info += std::string{start.station_id_} + " ";
   train_ticket_info += date_to_string(date + start_dep_time / TIME_MAX_IN_DAY) + " ";
   train_ticket_info += time_to_string(start_dep_time) + " -> ";
-  train_ticket_info += std::string{dest.stations_id_} + " ";
+  train_ticket_info += std::string{dest.station_id_} + " ";
   train_ticket_info += date_to_string(date + dest_arr_time / TIME_MAX_IN_DAY) + " ";
   train_ticket_info += time_to_string(dest_arr_time) + " ";
   train_ticket_info += std::to_string(dest.price_ - start.price_) + " ";

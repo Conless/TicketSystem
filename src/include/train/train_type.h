@@ -71,7 +71,7 @@ struct TrainDateInfo {  // 440 bytes
 
 struct TrainStationInfo {  // 80 bytes
   TrainID train_id_;
-  StationID stations_id_;
+  StationID station_id_;
   int index_in_train_;
 
   int dep_date_start_;
@@ -80,18 +80,6 @@ struct TrainStationInfo {  // 80 bytes
   int arr_time_;
   int dep_time_;
   int price_;
-};
-
-struct ArrivalInfo {
-  StationID station_id_;
-  int index_in_train_;
-  int arrival_date_;
-  int arrival_time_;
-};
-
-struct DepartureInfo {
-  StationID station_id_;
-  int index_in_train_;
 };
 
 using TrainDateTicketInfo = PairKey<TrainDateID, int>;
