@@ -11,7 +11,7 @@ namespace conless {
 
 TrainSystem::TrainSystem(const std::string &file_name, bool inherit_file)
     : train_info_db_(file_name + "_train_info"),
-      train_date_info_db_(file_name + "_train_date_info"),
+      train_date_info_db_(file_name + "_train_date_info", 50),
       train_station_info_db_(file_name + "_train_station_info", 50),
       ticket_info_db_(file_name + "_ticket_info"),
       ticket_waitlist_info_db_(file_name + "_ticket_waitlist_info") {}
@@ -182,6 +182,17 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
     return "0";
   }
 
+  bool stored_flag = false;
+  vector<TrainInfo> dest_trains_info;
+
+  if (dest_trains_station_info.size() <= 1000) {
+    stored_flag = true;
+    dest_trains_info.reserve(dest_trains_station_info.size());
+    for (const auto &dest_train_station_info : dest_trains_station_info) {
+      dest_trains_info.push_back(train_info_db_.Find(dest_train_station_info.train_id_).second);
+    }
+  }
+
   using ResultKey = std::pair<std::pair<int, int>, std::pair<TrainID, TrainID>>;
   std::pair<ResultKey, std::string> result{{{INT_MAX, INT_MAX}, {"", ""}}, "0"};
 
@@ -205,7 +216,9 @@ auto TrainSystem::QueryTransfer(const std::string &date_str, const StationID &st
 
     int dest_train_index = 0;
     for (const auto &dest_train_station_info : dest_trains_station_info) {
-      const auto dest_train_info = train_info_db_.Find(dest_train_station_info.train_id_).second;
+      const auto &dest_train_info = stored_flag ? dest_trains_info[dest_train_index]
+                                                : train_info_db_.GetIterator(dest_train_station_info.train_id_)->second;
+      dest_train_index++;
 
       StationIndex dest_dep_info[STATION_NUM_MAX];
       for (int l = 0; l < dest_train_station_info.index_in_train_; l++) {
