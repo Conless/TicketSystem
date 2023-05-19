@@ -10,9 +10,9 @@ to be updated.
 - [x] 05-12 Utils for input operations. User system.
 - [x] 05-14 Train system. Finish the main part.
 - [x] 05-15 Start debugging.
-- [ ] 05-18 Pass the test.
+- [x] 05-18 Pass the test.
 #### Extra plan if time permitted
-- [ ] 05-19 ~ 05-21 GUI
+- [x] 05-19 ~ 05-21 GUI
 
 ## Structure
 The project consists of two main parts, UserSystem and TrainSystem and they are connected by class TicketSystem. For more details about the structure and operations, please see [Structure Document](docs/structure.md).
